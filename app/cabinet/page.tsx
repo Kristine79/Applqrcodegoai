@@ -125,7 +125,7 @@ export default function CabinetPage() {
             className="w-full glass-panel p-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
           >
             <Download className="w-3.5 h-3.5 text-gray-400" />
-            Как скачать визитку
+            сохранить визитку
           </button>
         </div>
 

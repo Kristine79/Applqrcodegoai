@@ -17,7 +17,8 @@ import {
   Mail, 
   Info,
   ChevronRight,
-  Package
+  Package,
+  Headphones
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -359,6 +360,21 @@ export default function OrderPage() {
             После оплаты мы сгенерируем макет вашей наклейки на основе данных из вашего профиля и отправим в производство. Доставка осуществляется Почтой России или СДЭК.
           </p>
         </div>
+
+        {/* Footer */}
+        <footer className="pt-8 pb-4 border-t border-white/5 flex flex-col items-center gap-4">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors cursor-pointer">
+              <Headphones className="w-4 h-4" />
+              <span className="text-xs font-medium">Техподдержка</span>
+            </div>
+            <a href="mailto:info@premiumwebsite.ru" className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors">
+              <Mail className="w-4 h-4" />
+              <span className="text-xs font-medium">info@premiumwebsite.ru</span>
+            </a>
+          </div>
+          <p className="text-[10px] text-gray-600 font-medium uppercase tracking-widest">© 2024 CarQR Project</p>
+        </footer>
       </main>
     </div>
   );

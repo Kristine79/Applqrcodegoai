@@ -42,6 +42,7 @@ export default function Home() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
+  const [showMockup, setShowMockup] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [stats, setStats] = useState<{ totalScans: number; cardScans: Record<string, number> } | null>(null);
@@ -349,26 +350,61 @@ export default function Home() {
     const svgData = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const scale = 4;
+    const qrSize = 240 * scale;
+    const padding = 10 * scale;
+    const fontSize = 14 * scale;
+    const lineHeight = 18 * scale;
+    const maxWidth = qrSize - (padding * 2);
+
+    ctx.font = `bold ${fontSize}px sans-serif`;
     
-    // Set high resolution for download
-    const scale = 4; // 240 * 4 = 960px
-    const size = 240 * scale;
-    canvas.width = size;
-    canvas.height = size;
+    // Calculate lines
+    const words = (formData.qrText || '').split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+
+    if (formData.qrText) {
+      for (let n = 0; n < words.length; n++) {
+        const testLine = currentLine + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          lines.push(currentLine);
+          currentLine = words[n] + ' ';
+        } else {
+          currentLine = testLine;
+        }
+      }
+      lines.push(currentLine);
+    }
+
+    const textHeight = lines.length > 0 ? (lines.length * lineHeight) + padding : 0;
+    
+    canvas.width = qrSize;
+    canvas.height = qrSize + textHeight;
     
     const img = new window.Image();
     img.onload = () => {
-      if (ctx) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, size, size);
-        
-        const pngFile = canvas.toDataURL('image/png', 1.0);
-        const downloadLink = document.createElement('a');
-        downloadLink.download = `QR_${formData.plateNumber || 'car'}.png`;
-        downloadLink.href = pngFile;
-        downloadLink.click();
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, qrSize, qrSize);
+      
+      if (lines.length > 0) {
+        ctx.fillStyle = 'black';
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.textAlign = 'center';
+        lines.forEach((line, i) => {
+          ctx.fillText(line.trim(), qrSize / 2, qrSize + (i * lineHeight) + fontSize);
+        });
       }
+      
+      const pngFile = canvas.toDataURL('image/png', 1.0);
+      const downloadLink = document.createElement('a');
+      downloadLink.download = `QR_${formData.plateNumber || 'car'}.png`;
+      downloadLink.href = pngFile;
+      downloadLink.click();
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
   };
@@ -389,20 +425,57 @@ export default function Home() {
     const svgData = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    
+    if (!ctx) return;
+
     const scale = 4;
-    const size = 240 * scale;
-    canvas.width = size;
-    canvas.height = size;
+    const qrSize = 240 * scale;
+    const padding = 10 * scale;
+    const fontSize = 14 * scale;
+    const lineHeight = 18 * scale;
+    const maxWidth = qrSize - (padding * 2);
+
+    ctx.font = `bold ${fontSize}px sans-serif`;
+    
+    // Calculate lines
+    const words = (formData.qrText || '').split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+
+    if (formData.qrText) {
+      for (let n = 0; n < words.length; n++) {
+        const testLine = currentLine + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          lines.push(currentLine);
+          currentLine = words[n] + ' ';
+        } else {
+          currentLine = testLine;
+        }
+      }
+      lines.push(currentLine);
+    }
+
+    const textHeight = lines.length > 0 ? (lines.length * lineHeight) + padding : 0;
+    
+    canvas.width = qrSize;
+    canvas.height = qrSize + textHeight;
     
     const img = new window.Image();
     img.onload = async () => {
-      if (ctx) {
-        ctx.fillStyle = 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, size, size);
-        
-        canvas.toBlob(async (blob) => {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, qrSize, qrSize);
+      
+      if (lines.length > 0) {
+        ctx.fillStyle = 'black';
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.textAlign = 'center';
+        lines.forEach((line, i) => {
+          ctx.fillText(line.trim(), qrSize / 2, qrSize + (i * lineHeight) + fontSize);
+        });
+      }
+      
+      canvas.toBlob(async (blob) => {
           if (!blob) return;
           const file = new File([blob], `QR_${formData.plateNumber || 'car'}.png`, { type: 'image/png' });
           
@@ -423,7 +496,6 @@ export default function Home() {
             }
           }
         }, 'image/png');
-      }
     };
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
   };
@@ -1019,33 +1091,47 @@ export default function Home() {
             <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center gap-10">
               <div className="relative group">
                 <div className="absolute -inset-4 red-gradient rounded-[3rem] blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div className="relative bg-white p-8 rounded-[2.5rem] shadow-2xl">
+                <div className="relative bg-white p-8 rounded-[2.5rem] shadow-2xl flex flex-col items-center max-w-full">
                   <QRCodeSVG 
                     id="qr-code-svg"
                     value={generatedUrl}
                     size={280}
                     level="Q"
                     includeMargin={true}
+                    className="max-w-full h-auto"
                   />
+                  {formData.qrText && (
+                    <div className="mt-2 text-black font-bold text-xl text-center break-words max-w-[280px]">
+                      {formData.qrText}
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="w-full max-w-sm space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-2">
                   <button
                     onClick={downloadQR}
-                    className="py-4 px-4 rounded-2xl red-gradient text-white font-bold flex flex-col items-center justify-center gap-2 shadow-xl red-glow hover:brightness-110 transition-all"
+                    className="py-3 px-2 rounded-2xl red-gradient text-white font-bold flex flex-col items-center justify-center gap-1.5 shadow-xl red-glow hover:brightness-110 transition-all"
                   >
-                    <Download className="w-5 h-5" />
-                    <span className="text-[10px] uppercase tracking-widest">Скачать PNG</span>
+                    <Download className="w-4 h-4" />
+                    <span className="text-[9px] uppercase tracking-widest">Скачать</span>
+                  </button>
+                  
+                  <button
+                    onClick={() => setShowMockup(true)}
+                    className="py-3 px-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-1.5 border bg-white/5 border-white/10 text-white hover:bg-white/10 transition-all"
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                    <span className="text-[9px] uppercase tracking-widest">Макет</span>
                   </button>
                   
                   <button
                     onClick={saveCardToProfile}
-                    className="py-4 px-4 rounded-2xl font-bold flex flex-col items-center justify-center gap-2 border bg-white/5 border-white/10 text-white hover:bg-white/10 transition-all"
+                    className="py-3 px-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-1.5 border bg-white/5 border-white/10 text-white hover:bg-white/10 transition-all"
                   >
-                    <Plus className="w-5 h-5" />
-                    <span className="text-[10px] uppercase tracking-widest">В профиль</span>
+                    <Plus className="w-4 h-4" />
+                    <span className="text-[9px] uppercase tracking-widest">Профиль</span>
                   </button>
                 </div>
 
@@ -1122,6 +1208,43 @@ export default function Home() {
                 <p className="text-xs text-gray-500 leading-relaxed text-center font-medium">
                   Распечатайте этот код и разместите его под лобовым стеклом. При сканировании откроется ваша персональная визитка.
                 </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mockup Modal */}
+      <AnimatePresence>
+        {showMockup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex flex-col bg-black/95 backdrop-blur-2xl"
+          >
+            <header className="flex items-center justify-between px-8 py-6 border-b border-white/10">
+              <h2 className="text-2xl font-bold tracking-tight">Макет наклейки</h2>
+              <button 
+                onClick={() => setShowMockup(false)}
+                className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all"
+              >
+                <Plus className="w-6 h-6 rotate-45" />
+              </button>
+            </header>
+            <div className="flex-1 flex items-center justify-center p-4">
+              <div className="relative w-full max-w-lg aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                <Image 
+                  src="https://picsum.photos/seed/car-sticker/800/600" 
+                  alt="Mockup" 
+                  fill 
+                  className="object-cover"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
+                  <p className="text-white font-bold text-lg">Пример размещения на лобовом стекле</p>
+                  <p className="text-white/60 text-sm">Ваш QR-код будет напечатан на качественной виниловой пленке</p>
+                </div>
               </div>
             </div>
           </motion.div>
