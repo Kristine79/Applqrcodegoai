@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package } from 'lucide-react';
+import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { encodeCardData, type CarCardData } from '@/lib/utils';
@@ -43,7 +43,14 @@ export default function Home() {
   const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
   const [showMockup, setShowMockup] = useState(false);
+  const [currentMockupIndex, setCurrentMockupIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
+
+  const MOCKUP_IMAGES = [
+    { src: 'https://picsum.photos/seed/car-sticker-1/800/600', title: 'Вид спереди', desc: 'Размещение на лобовом стекле' },
+    { src: 'https://picsum.photos/seed/car-sticker-2/800/600', title: 'Вид сбоку', desc: 'Размещение на боковом стекле' },
+    { src: 'https://picsum.photos/seed/car-sticker-3/800/600', title: 'Вид сзади', desc: 'Размещение на заднем стекле' },
+  ];
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [stats, setStats] = useState<{ totalScans: number; cardScans: Record<string, number> } | null>(null);
   const [showStats, setShowStats] = useState(false);
@@ -1224,7 +1231,7 @@ export default function Home() {
             className="fixed inset-0 z-[60] flex flex-col bg-black/95 backdrop-blur-2xl"
           >
             <header className="flex items-center justify-between px-8 py-6 border-b border-white/10">
-              <h2 className="text-2xl font-bold tracking-tight">Макет наклейки</h2>
+              <h2 className="text-2xl font-bold tracking-tight">Макеты наклеек</h2>
               <button 
                 onClick={() => setShowMockup(false)}
                 className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all"
@@ -1233,17 +1240,60 @@ export default function Home() {
               </button>
             </header>
             <div className="flex-1 flex items-center justify-center p-4">
-              <div className="relative w-full max-w-lg aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                <Image 
-                  src="https://picsum.photos/seed/car-sticker/800/600" 
-                  alt="Mockup" 
-                  fill 
-                  className="object-cover"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-8">
-                  <p className="text-white font-bold text-lg">Пример размещения на лобовом стекле</p>
-                  <p className="text-white/60 text-sm">Ваш QR-код будет напечатан на качественной виниловой пленке</p>
+              <div className="relative w-full max-w-lg aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10 group">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={currentMockupIndex}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.3 }}
+                    className="absolute inset-0"
+                  >
+                    <Image 
+                      src={MOCKUP_IMAGES[currentMockupIndex].src} 
+                      alt="Mockup" 
+                      fill 
+                      className="object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-8">
+                      <p className="text-white font-bold text-xl">{MOCKUP_IMAGES[currentMockupIndex].title}</p>
+                      <p className="text-white/60 text-sm">{MOCKUP_IMAGES[currentMockupIndex].desc}</p>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Navigation Arrows */}
+                <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentMockupIndex((prev) => (prev - 1 + MOCKUP_IMAGES.length) % MOCKUP_IMAGES.length);
+                    }}
+                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white pointer-events-auto hover:bg-black/60 transition-all"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCurrentMockupIndex((prev) => (prev + 1) % MOCKUP_IMAGES.length);
+                    }}
+                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white pointer-events-auto hover:bg-black/60 transition-all"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                </div>
+
+                {/* Dots Indicator */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                  {MOCKUP_IMAGES.map((_, idx) => (
+                    <div 
+                      key={idx}
+                      className={`w-1.5 h-1.5 rounded-full transition-all ${idx === currentMockupIndex ? 'bg-apple-red w-4' : 'bg-white/20'}`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
