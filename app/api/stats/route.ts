@@ -21,9 +21,11 @@ function getStats() {
 
 function saveStats(stats: any) {
   try {
+    // Check if we are in a read-only environment like Vercel
     fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
   } catch (e) {
-    console.error('Error saving stats:', e);
+    // On Vercel this will fail, which is expected for serverless
+    console.warn('Stats saving skipped (likely read-only filesystem):', e instanceof Error ? e.message : String(e));
   }
 }
 

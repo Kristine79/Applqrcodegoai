@@ -2,12 +2,22 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const { chatId, message } = await req.json();
+    let body;
+    try {
+      body = await req.json();
+    } catch (e) {
+      return NextResponse.json({ error: 'Invalid JSON in request body' }, { status: 400 });
+    }
+
+    const { chatId, message } = body;
     const botToken = process.env.NOTIFY_BOT_TOKEN;
     const adminChatId = process.env.ADMIN_CHAT_ID || '402396098';
 
     if (!botToken) {
-      return NextResponse.json({ error: 'Notification Bot Token (NOTIFY_BOT_TOKEN) is not configured in Settings -> Secrets' }, { status: 500 });
+      console.error('NOTIFY_BOT_TOKEN is missing');
+      return NextResponse.json({ 
+        error: 'Notification Bot Token is not configured. Please add NOTIFY_BOT_TOKEN to environment variables.' 
+      }, { status: 401 });
     }
 
     const targetChatId = (chatId || adminChatId)?.toString().trim();
