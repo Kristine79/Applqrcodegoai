@@ -66,36 +66,6 @@ export default function CabinetPage() {
     // ... logic removed ...
   };
 
-  const testNotification = async () => {
-    try {
-      const res = await fetch('/api/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: '🔔 <b>Тестовое уведомление!</b>\n\nВаш бот успешно подключен к приложению CarQR.'
-        }),
-      });
-      
-      const text = await res.text();
-      let data;
-      try {
-        data = text ? JSON.parse(text) : {};
-      } catch (e) {
-        console.error('Failed to parse notify response:', text.slice(0, 100));
-        data = { error: 'Invalid server response' };
-      }
-
-      if (res.ok && data.success) {
-        alert('Тестовое уведомление отправлено! Проверьте свой Telegram.');
-      } else {
-        alert(`Ошибка: ${data.error || 'Неизвестная ошибка'}`);
-      }
-    } catch (err) {
-      alert('Ошибка при отправке уведомления. Проверьте консоль.');
-      console.error(err);
-    }
-  };
-
   if (!mounted) return null;
 
   return (
@@ -160,13 +130,6 @@ export default function CabinetPage() {
           >
             <Download className="w-3.5 h-3.5 text-gray-400" />
             Экспорт данных (бэкап)
-          </button>
-          <button
-            onClick={testNotification}
-            className="w-full glass-panel p-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-apple-red/10 transition-all text-apple-red border border-apple-red/20"
-          >
-            <ShieldCheck className="w-3.5 h-3.5" />
-            Проверить уведомления
           </button>
         </div>
 

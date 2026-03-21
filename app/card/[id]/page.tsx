@@ -376,16 +376,16 @@ export default function PublicCardView() {
 
       <footer className="mt-8 mb-6 text-center space-y-5 px-5">
         <div className="flex flex-col items-center gap-3">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]">Разработка и поддержка</p>
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]">Закажи qr код бесплатно</p>
           <div className="flex items-center justify-center">
             <a 
-              href="mailto:info@premiumwebsite.ru" 
+              href="https://carqr-free.vercel.app" 
               className="group flex flex-col items-center gap-1"
             >
               <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-apple-red/20 group-hover:border-apple-red/30 transition-all">
-                <Mail className="w-3.5 h-3.5 text-gray-400 group-hover:text-apple-red" />
+                <QrCode className="w-3.5 h-3.5 text-gray-400 group-hover:text-apple-red" />
               </div>
-              <span className="text-[10px] font-bold text-gray-500 group-hover:text-gray-400 transition-colors">Email</span>
+              <span className="text-[10px] font-bold text-gray-500 group-hover:text-gray-400 transition-colors">Перейти</span>
             </a>
           </div>
         </div>

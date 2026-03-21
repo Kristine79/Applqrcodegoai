@@ -985,14 +985,14 @@ export default function Home() {
 
         <footer className="mt-16 mb-8 text-center space-y-8 relative z-10">
           <div className="flex flex-col items-center gap-6">
-            <p className="text-xs font-bold text-white/30 uppercase tracking-[0.3em]">Разработка и поддержка</p>
+            <p className="text-xs font-bold text-white/30 uppercase tracking-[0.3em]">Закажи qr код бесплатно</p>
             <div className="flex flex-col items-center gap-4">
               <a 
-                href="mailto:info@premiumwebsite.ru" 
+                href="https://carqr-free.vercel.app" 
                 className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-apple-red transition-colors"
               >
-                <Mail className="w-4 h-4" />
-                Email
+                <QrCode className="w-4 h-4" />
+                Перейти
               </a>
             </div>
           </div>
