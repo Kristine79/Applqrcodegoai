@@ -562,14 +562,6 @@ export default function Home() {
               <h1 className="text-xl font-bold tracking-tight">Создать визитку</h1>
               <p className="text-gray-500 text-xs font-medium">Безопасное шифрование данных</p>
             </div>
-            <button
-              type="button"
-              onClick={clearDraft}
-              className="absolute top-4 right-4 text-gray-600 hover:text-apple-red transition-colors"
-              title="Очистить форму"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
           </div>
 
           {/* Instruction Section */}
@@ -605,6 +597,10 @@ export default function Home() {
                     <div className="flex gap-2">
                       <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-xs">3</div>
                       <p>Распечатайте код и разместите его под лобовым стеклом.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-xs">4</div>
+                      <p>Закажите оригинальную наклейку.</p>
                     </div>
                   </div>
                 </motion.div>
@@ -985,14 +981,14 @@ export default function Home() {
 
         <footer className="mt-16 mb-8 text-center space-y-8 relative z-10">
           <div className="flex flex-col items-center gap-6">
-            <p className="text-xs font-bold text-white/30 uppercase tracking-[0.3em]">Закажи qr код бесплатно</p>
+            <p className="text-xs font-bold text-white/30 uppercase tracking-[0.3em]">Разработка и поддержка</p>
             <div className="flex flex-col items-center gap-4">
               <a 
-                href="https://carqr-free.vercel.app" 
+                href="mailto:info@premiumwebsite.ru" 
                 className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-apple-red transition-colors"
               >
-                <QrCode className="w-4 h-4" />
-                Перейти
+                <Mail className="w-4 h-4" />
+                Email
               </a>
             </div>
           </div>

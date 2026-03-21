@@ -111,14 +111,10 @@ export default function CabinetPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-1 gap-2.5">
           <div className="glass-panel p-2.5 flex flex-col items-center justify-center gap-0 text-center">
             <span className="text-lg font-bold">{savedCards.length}</span>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Визиток</span>
-          </div>
-          <div className="glass-panel p-2.5 flex flex-col items-center justify-center gap-0 text-center">
-            <span className="text-lg font-bold">0</span>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Уведомлений</span>
           </div>
         </div>
 
@@ -129,7 +125,7 @@ export default function CabinetPage() {
             className="w-full glass-panel p-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
           >
             <Download className="w-3.5 h-3.5 text-gray-400" />
-            Экспорт данных (бэкап)
+            Как скачать визитку
           </button>
         </div>
 
@@ -137,7 +133,6 @@ export default function CabinetPage() {
         <div className="space-y-2.5">
           <div className="flex items-center justify-between px-1">
             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Ваши визитки</h3>
-            <span className="text-[10px] text-gray-600">Только просмотр</span>
           </div>
 
           {savedCards.length === 0 ? (
@@ -293,7 +288,7 @@ export default function CabinetPage() {
         {/* Footer Info */}
         <div className="text-center pt-4">
           <p className="text-xs text-gray-600 uppercase tracking-[0.2em] font-bold">
-            CarQR Personal Cabinet • Secure & Private
+            Личный кабинет CarQR • Безопасно и конфиденциально
           </p>
         </div>
       </div>
