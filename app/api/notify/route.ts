@@ -3,11 +3,11 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   try {
     const { chatId, message } = await req.json();
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const botToken = process.env.NOTIFY_BOT_TOKEN;
     const adminChatId = process.env.ADMIN_CHAT_ID || '402396098';
 
     if (!botToken) {
-      return NextResponse.json({ error: 'Telegram Bot Token is not configured' }, { status: 500 });
+      return NextResponse.json({ error: 'Notification Bot Token (NOTIFY_BOT_TOKEN) is not configured in Settings -> Secrets' }, { status: 500 });
     }
 
     const targetChatId = (chatId || adminChatId)?.toString().trim();
