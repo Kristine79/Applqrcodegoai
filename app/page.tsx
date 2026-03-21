@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud } from 'lucide-react';
+import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { encodeCardData, type CarCardData } from '@/lib/utils';
@@ -97,25 +97,25 @@ export default function Home() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Fetch stats
-    fetch('/api/stats')
+    // Fetch metrics
+    fetch('/api/metrics')
       .then(async res => {
         if (!res.ok) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+          const errorText = await res.text().catch(() => 'No error details');
+          throw new Error(`HTTP ${res.status}: ${errorText}`);
         }
-        const text = await res.text();
-        if (!text || text.trim() === '') {
-          return { totalScans: 0, cardScans: {} };
-        }
-        try {
-          return JSON.parse(text);
-        } catch (e) {
-          console.error('Failed to parse stats JSON:', text.slice(0, 100));
-          throw e;
+        return res.json();
+      })
+      .then(data => {
+        if (data && typeof data === 'object') {
+          setStats(data);
         }
       })
-      .then(data => setStats(data))
-      .catch(err => console.error('Error fetching stats:', err));
+      .catch(err => {
+        console.error('Error fetching metrics:', err);
+        // Fallback to empty stats to avoid UI breakage
+        setStats({ totalScans: 0, cardScans: {} });
+      });
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -1052,6 +1052,14 @@ export default function Home() {
                     <span className="text-[10px] uppercase tracking-widest">В профиль</span>
                   </button>
                 </div>
+
+                <Link
+                  href="/order"
+                  className="w-full py-4 px-8 rounded-2xl bg-apple-red text-white font-bold flex items-center justify-center gap-3 shadow-xl red-glow hover:brightness-110 transition-all"
+                >
+                  <Package className="w-5 h-5" />
+                  Заказать наклейку
+                </Link>
 
                 <button
                   onClick={() => copyToClipboard(generatedUrl || '')}

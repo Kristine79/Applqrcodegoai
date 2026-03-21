@@ -54,7 +54,7 @@ export default function PublicCardView() {
 
     // Track scan
     if (id) {
-      fetch('/api/stats', {
+      fetch('/api/metrics', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cardId: id }),

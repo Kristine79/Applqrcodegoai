@@ -10,7 +10,8 @@ import {
   ShieldCheck,
   CreditCard,
   X,
-  Download
+  Download,
+  Package
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useRouter } from 'next/navigation';
@@ -289,7 +290,14 @@ export default function CabinetPage() {
                     <p className="text-xs text-gray-600 text-center px-4">
                       Это данные вашей визитки. Люди увидят их при сканировании вашего QR-кода.
                     </p>
-                    <div className="grid grid-cols-2 gap-2 mt-2">
+                    <Link
+                      href="/order"
+                      className="w-full py-4 bg-apple-red text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:brightness-110 transition-all shadow-lg"
+                    >
+                      <Package className="w-4 h-4" />
+                      Заказать наклейку
+                    </Link>
+                    <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => selectedCard && editCard(selectedCard)}
                         className="py-3 bg-white/5 text-white rounded-xl text-sm font-bold hover:bg-white/10 transition-all"
