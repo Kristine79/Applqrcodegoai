@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, ShieldCheck, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { encodeCardData, type CarCardData } from '@/lib/utils';
@@ -510,7 +510,7 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-apple-red selection:text-white transition-colors duration-300" suppressHydrationWarning>
+    <div className="min-h-screen bg-zinc-950 text-white selection:bg-apple-red selection:text-white transition-colors duration-300" suppressHydrationWarning>
       <header className="glass-panel sticky top-0 z-50 mx-2 mt-2 px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-[46px] h-[46px] relative rounded-lg overflow-hidden shadow-lg border border-white/10">
@@ -523,7 +523,7 @@ export default function Home() {
               referrerPolicy="no-referrer"
             />
           </div>
-          <span className="font-bold text-xl tracking-tight">CarQR</span>
+          <span className="heading-section">CarQR</span>
         </Link>
         <div className="flex items-center gap-2">
           <Link
@@ -552,7 +552,7 @@ export default function Home() {
       </header>
 
       <main className="max-w-xl mx-auto p-2 space-y-3">
-        {/* Admin Stats Section */}
+        {/* Admin Stats Section - Temporarily Commented Out
         <div className="glass-card p-3 relative overflow-hidden">
           <button
             type="button"
@@ -563,7 +563,7 @@ export default function Home() {
               <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
                 <BarChart3 className="w-4 h-4 text-apple-red" />
               </div>
-              <h2 className="text-base font-bold tracking-tight">Статистика</h2>
+              <h2 className="heading-card">Статистика</h2>
             </div>
             <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
               {showStats ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -580,25 +580,26 @@ export default function Home() {
               >
                 <div className="pt-3 grid grid-cols-2 gap-3">
                   <div className="glass-panel p-3 flex flex-col items-center justify-center text-center">
-                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Всего сканирований</span>
+                    <span className="text-caption mb-1">Всего сканирований</span>
                     <span className="text-2xl font-black text-apple-red">{stats?.totalScans || 0}</span>
                   </div>
                   <div className="glass-panel p-3 flex flex-col items-center justify-center text-center">
-                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Активных визиток</span>
-                    <span className="text-2xl font-black text-gray-900 dark:text-white">{Object.keys(stats?.cardScans || {}).length}</span>
+                    <span className="text-caption mb-1">Активных визиток</span>
+                    <span className="text-2xl font-black text-white">{Object.keys(stats?.cardScans || {}).length}</span>
                   </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
+        */}
 
         {/* Recent Cards Section */}
         {savedCards.length > 0 && (
           <div className="glass-card p-3 relative overflow-hidden">
             <div className="flex items-center justify-between mb-2 px-1">
-              <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Недавние визитки</h3>
-              <Link href="/cabinet" className="text-[10px] font-bold text-apple-red uppercase tracking-widest hover:opacity-80 transition-opacity">Все</Link>
+              <h3 className="text-caption">Недавние визитки</h3>
+              <Link href="/cabinet" className="text-caption text-apple-red hover:opacity-80 transition-opacity">Все</Link>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
               {savedCards.slice(-5).reverse().map((card, idx) => (
@@ -614,8 +615,8 @@ export default function Home() {
                     <Car className="w-3.5 h-3.5 text-gray-400" />
                   </div>
                   <div className="overflow-hidden">
-                    <div className="text-[10px] font-bold truncate">{card.carModel}</div>
-                    <div className="text-[8px] font-mono text-gray-500 uppercase tracking-widest truncate">{card.plateNumber}</div>
+                    <div className="text-label truncate">{card.carModel}</div>
+                    <div className="text-[8px] text-white/40 truncate">{card.plateNumber}</div>
                   </div>
                 </button>
               ))}
@@ -638,8 +639,8 @@ export default function Home() {
               />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight">Создать визитку</h1>
-              <p className="text-gray-500 text-xs font-medium">Безопасное шифрование данных</p>
+              <h1 className="heading-section">Создать визитку</h1>
+              <p className="text-body-sm">Безопасное шифрование данных</p>
             </div>
           </div>
 
@@ -650,7 +651,7 @@ export default function Home() {
               onClick={() => toggleSection('instruction')}
               className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-white/5 transition-colors"
             >
-              <h2 className="text-base font-bold tracking-tight">Как это работает?</h2>
+              <h2 className="heading-card">Как это работает?</h2>
               <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
                 {expandedSections.instruction ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </div>
@@ -664,7 +665,7 @@ export default function Home() {
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="pt-2 space-y-2 text-gray-400 text-sm leading-relaxed">
+                  <div className="pt-2 space-y-2 text-body-sm">
                     <div className="flex gap-2">
                       <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-xs">1</div>
                       <p>Заполните данные о вашем автомобиле и контактную информацию.</p>
@@ -699,7 +700,7 @@ export default function Home() {
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
                     <Car className="w-4 h-4 text-apple-red" />
                   </div>
-                  <h2 className="text-base font-bold tracking-tight">Автомобиль</h2>
+                  <h2 className="heading-card">Автомобиль</h2>
                 </div>
                 <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
                   {expandedSections.car ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -716,7 +717,7 @@ export default function Home() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
                       <div className="space-y-1.5">
-                        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Марка и модель</label>
+                        <label className="text-caption ml-1">Марка и модель</label>
                         <motion.div
                           animate={errors.carModel ? { x: [-4, 4, -4, 4, 0] } : {}}
                           transition={{ duration: 0.4 }}
@@ -733,7 +734,7 @@ export default function Home() {
                         </motion.div>
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Госномер</label>
+                        <label className="text-caption ml-1">Госномер</label>
                         <motion.div
                           animate={errors.plateNumber ? { x: [-4, 4, -4, 4, 0] } : {}}
                           transition={{ duration: 0.4 }}
@@ -745,7 +746,7 @@ export default function Home() {
                             value={formData.plateNumber || ''}
                             onChange={handleInputChange}
                             placeholder="А123ВС 777"
-                            className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all font-mono uppercase tracking-widest outline-none placeholder:text-gray-600`}
+                            className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-gray-600`}
                           />
                         </motion.div>
                       </div>
@@ -766,7 +767,7 @@ export default function Home() {
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
                     <User className="w-4 h-4 text-apple-red" />
                   </div>
-                  <h2 className="text-base font-bold tracking-tight">Владелец</h2>
+                  <h2 className="heading-card">Владелец</h2>
                 </div>
                 <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
                   {expandedSections.owner ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -832,7 +833,7 @@ export default function Home() {
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
                     <Send className="w-4 h-4 text-apple-red" />
                   </div>
-                  <h2 className="text-base font-bold tracking-tight">Мессенджеры</h2>
+                  <h2 className="heading-card">Мессенджеры</h2>
                 </div>
                 <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
                   {expandedSections.socials ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -885,7 +886,7 @@ export default function Home() {
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
                     <AlertTriangle className="w-4 h-4 text-apple-red" />
                   </div>
-                  <h2 className="text-base font-bold tracking-tight">Быстрые кнопки</h2>
+                  <h2 className="heading-card">Быстрые кнопки</h2>
                 </div>
                 <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
                   {expandedSections.buttons ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -914,8 +915,8 @@ export default function Home() {
                                 : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/10'
                             }`}
                           >
-                            <btn.icon className={`w-4 h-4 mb-1 ${isActive ? 'text-white' : 'text-gray-600'}`} />
-                            <span className="text-xs font-black uppercase tracking-widest text-center">
+                            <btn.icon className={`w-4 h-4 mb-1 ${isActive ? 'text-white' : 'text-white/20'}`} />
+                            <span className="text-caption text-center">
                               {btn.label}
                             </span>
                           </button>
@@ -938,7 +939,7 @@ export default function Home() {
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
                     <Palette className="w-4 h-4 text-apple-red" />
                   </div>
-                  <h2 className="text-base font-bold tracking-tight">Дизайн</h2>
+                  <h2 className="heading-card">Дизайн</h2>
                 </div>
                 <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
                   {expandedSections.design ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -955,7 +956,7 @@ export default function Home() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
                       <div className="space-y-1.5">
-                        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Основной цвет</label>
+                        <label className="text-caption ml-1">Основной цвет</label>
                         <div className="flex gap-2 items-center">
                           <input
                             type="color"
@@ -974,7 +975,7 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[11px] font-bold text-gray-400 uppercase tracking-widest ml-1">Текст рядом с QR</label>
+                        <label className="text-caption ml-1">Текст рядом с QR</label>
                         <div className="relative">
                           <Type className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600" />
                           <input
@@ -995,7 +996,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={isGenerating}
-              className={`w-full py-3 px-6 rounded-xl font-bold text-base uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl ${
+              className={`w-full py-3 px-6 rounded-xl font-bold text-base transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl ${
                 isSuccess 
                   ? 'bg-green-500 text-white' 
                   : 'red-gradient text-white red-glow hover:brightness-110'
@@ -1059,19 +1060,23 @@ export default function Home() {
         </div>
 
         <footer className="mt-16 mb-8 text-center space-y-8 relative z-10">
-          <div className="flex flex-col items-center gap-6">
-            <p className="text-xs font-bold text-white/30 uppercase tracking-[0.3em]">Разработка и поддержка</p>
-            <div className="flex flex-col items-center gap-4">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+              <ShieldCheck className="w-6 h-6 text-apple-red" />
+              <span className="text-caption text-white/60">Мы не храним ваши данные на сервере. Все данные кодируются прямо в QR-код.</span>
+            </div>
+            <div className="flex items-center gap-4 text-xs font-bold">
+              <span className="text-white/30">Поддержка:</span>
               <a 
                 href="mailto:info@premiumwebsite.ru" 
-                className="flex items-center gap-2 text-xs font-bold text-white/60 hover:text-apple-red transition-colors"
+                className="flex items-center gap-2 text-white/60 hover:text-apple-red transition-colors"
               >
                 <Mail className="w-4 h-4" />
-                Email
+                info@premiumwebsite.ru
               </a>
             </div>
           </div>
-          <p className="text-xs text-white/20 font-bold tracking-widest uppercase">© 2026 CarQR. Все права защищены.</p>
+          <p className="text-xs text-white/20 font-bold">© 2026 CarQR. Все права защищены.</p>
         </footer>
       </main>
 
@@ -1105,6 +1110,7 @@ export default function Home() {
                     size={280}
                     level="Q"
                     includeMargin={true}
+                    fgColor={formData.themeColor}
                     className="max-w-full h-auto"
                   />
                   {formData.qrText && (
@@ -1122,7 +1128,7 @@ export default function Home() {
                     className="py-3 px-2 rounded-2xl red-gradient text-white font-bold flex flex-col items-center justify-center gap-1.5 shadow-xl red-glow hover:brightness-110 transition-all"
                   >
                     <Download className="w-4 h-4" />
-                    <span className="text-[9px] uppercase tracking-widest">Скачать</span>
+                    <span className="text-caption">Скачать</span>
                   </button>
                   
                   <button
@@ -1130,7 +1136,7 @@ export default function Home() {
                     className="py-3 px-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-1.5 border bg-white/5 border-white/10 text-white hover:bg-white/10 transition-all"
                   >
                     <ImageIcon className="w-4 h-4" />
-                    <span className="text-[9px] uppercase tracking-widest">Макет</span>
+                    <span className="text-caption">Макет</span>
                   </button>
                   
                   <button
@@ -1138,7 +1144,7 @@ export default function Home() {
                     className="py-3 px-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-1.5 border bg-white/5 border-white/10 text-white hover:bg-white/10 transition-all"
                   >
                     <Plus className="w-4 h-4" />
-                    <span className="text-[9px] uppercase tracking-widest">Профиль</span>
+                    <span className="text-caption">Профиль</span>
                   </button>
                 </div>
 
@@ -1159,7 +1165,7 @@ export default function Home() {
                 </button>
 
                 <div className="space-y-3 pt-2">
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.2em] text-center">Поделиться ссылкой на приложение</p>
+                  <p className="text-caption text-center">Поделиться ссылкой на приложение</p>
                   <div className="flex justify-center gap-3">
                     <button
                       onClick={() => {
@@ -1212,7 +1218,7 @@ export default function Home() {
               </div>
 
               <div className="glass-panel p-6 w-full max-w-sm">
-                <p className="text-xs text-gray-500 leading-relaxed text-center font-medium">
+                <p className="text-body-sm text-center">
                   Распечатайте этот код и разместите его под лобовым стеклом. При сканировании откроется ваша персональная визитка.
                 </p>
               </div>
@@ -1258,8 +1264,8 @@ export default function Home() {
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-8">
-                      <p className="text-white font-bold text-xl">{MOCKUP_IMAGES[currentMockupIndex].title}</p>
-                      <p className="text-white/60 text-sm">{MOCKUP_IMAGES[currentMockupIndex].desc}</p>
+                      <p className="heading-card text-xl">{MOCKUP_IMAGES[currentMockupIndex].title}</p>
+                      <p className="text-body-sm">{MOCKUP_IMAGES[currentMockupIndex].desc}</p>
                     </div>
                   </motion.div>
                 </AnimatePresence>

@@ -54,14 +54,14 @@ class ErrorBoundary extends Component<Props, State> {
               <AlertTriangle className="w-8 h-8 text-apple-red" />
             </div>
             
-            <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Ошибка приложения</h2>
-            <p className="text-white/60 mb-6 leading-relaxed font-medium text-sm">
+            <h2 className="heading-display text-white mb-2">Ошибка приложения</h2>
+            <p className="text-body text-white/60 mb-6 leading-relaxed">
               {errorMessage}
             </p>
 
             {errorStack && (
               <div className="mb-8 p-4 bg-black/40 rounded-xl border border-white/5 text-left overflow-x-auto">
-                <p className="text-[10px] font-mono text-white/30 uppercase mb-2 tracking-widest">Stack Trace</p>
+                <p className="text-label text-white/30 mb-2">Stack Trace</p>
                 <pre className="text-[10px] font-mono text-apple-red/70 whitespace-pre-wrap break-all">
                   {errorStack}
                 </pre>
@@ -71,14 +71,14 @@ class ErrorBoundary extends Component<Props, State> {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => window.location.reload()}
-                className="flex-1 flex items-center justify-center gap-2 bg-white/10 text-white py-4 px-6 rounded-2xl font-bold hover:bg-white/20 transition-all active:scale-95"
+                className="flex-1 flex items-center justify-center gap-2 bg-white/10 text-white py-4 px-6 rounded-2xl heading-card hover:bg-white/20 transition-all active:scale-95"
               >
                 <RefreshCw className="w-4 h-4" />
                 Обновить страницу
               </button>
               <button
                 onClick={() => window.location.href = '/'}
-                className="flex-1 flex items-center justify-center gap-2 red-gradient text-white py-4 px-6 rounded-2xl font-bold shadow-lg hover:brightness-110 transition-all active:scale-95"
+                className="flex-1 flex items-center justify-center gap-2 red-gradient text-white py-4 px-6 rounded-2xl heading-card shadow-lg hover:brightness-110 transition-all active:scale-95"
               >
                 На главную
               </button>

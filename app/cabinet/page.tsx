@@ -69,7 +69,7 @@ export default function CabinetPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-apple-red selection:text-white p-3 md:p-4">
+    <div className="min-h-screen bg-zinc-950 text-white selection:bg-apple-red selection:text-white p-3 md:p-4">
       <div className="max-w-2xl mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -84,9 +84,9 @@ export default function CabinetPage() {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <span className="font-bold text-lg tracking-tight">CarQR</span>
+            <span className="heading-section">CarQR</span>
           </Link>
-          <h1 className="text-base font-bold tracking-tight">Личный кабинет</h1>
+          <h1 className="heading-card">Личный кабинет</h1>
           <div className="w-8 h-8 rounded-full bg-apple-red/10 flex items-center justify-center border border-apple-red/20">
             <User className="w-3.5 h-3.5 text-apple-red" />
           </div>
@@ -100,11 +100,11 @@ export default function CabinetPage() {
               <ShieldCheck className="w-5 h-5 text-apple-red" />
             </div>
             <div>
-              <h2 className="text-sm font-bold">Ваш профиль</h2>
-              <p className="text-gray-500 text-xs">Локальное хранилище данных</p>
+              <h2 className="text-label">Ваш профиль</h2>
+              <p className="text-body-sm">Локальное хранилище данных</p>
               <div className="mt-0.5 inline-flex items-center gap-1 px-1.5 py-0.5 bg-apple-red/10 rounded-lg border border-apple-red/20">
                 <span className="w-1 h-1 rounded-full bg-apple-red animate-pulse"></span>
-                <span className="text-[10px] font-bold text-apple-red uppercase tracking-widest">Активен</span>
+                <span className="text-caption text-apple-red">Активен</span>
               </div>
             </div>
           </div>
@@ -113,8 +113,8 @@ export default function CabinetPage() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-2.5">
           <div className="glass-panel p-2.5 flex flex-col items-center justify-center gap-0 text-center">
-            <span className="text-lg font-bold">{savedCards.length}</span>
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Визиток</span>
+            <span className="text-2xl font-bold">{savedCards.length}</span>
+            <span className="text-caption">Визиток</span>
           </div>
         </div>
 
@@ -122,17 +122,17 @@ export default function CabinetPage() {
         <div className="flex flex-col gap-2.5">
           <button
             onClick={exportCards}
-            className="w-full glass-panel p-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
+            className="w-full glass-panel p-2.5 flex items-center justify-center gap-2 text-caption hover:bg-white/5 transition-all"
           >
-            <Download className="w-3.5 h-3.5 text-gray-400" />
-            сохранить визитку
+            <Download className="w-3.5 h-3.5 text-white/20" />
+            Сохранить визитку
           </button>
         </div>
 
         {/* Cards List */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest">Ваши визитки</h3>
+            <h3 className="text-caption">Ваши визитки</h3>
           </div>
 
           {savedCards.length === 0 ? (
@@ -140,10 +140,10 @@ export default function CabinetPage() {
               <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center mx-auto opacity-20">
                 <CreditCard className="w-5 h-5" />
               </div>
-              <p className="text-gray-500 text-xs">У вас пока нет сохраненных визиток</p>
+              <p className="text-body-sm">У вас пока нет сохраненных визиток</p>
               <Link 
                 href="/" 
-                className="inline-block px-4 py-1.5 bg-apple-red rounded-xl text-xs font-bold hover:scale-105 transition-all"
+                className="inline-block px-4 py-1.5 bg-apple-red rounded-xl text-caption hover:scale-105 transition-all"
               >
                 Создать первую
               </Link>
@@ -164,8 +164,8 @@ export default function CabinetPage() {
                       <Car className="w-3.5 h-3.5 text-gray-400 group-hover:text-apple-red transition-all" />
                     </div>
                     <div>
-                      <div className="font-bold text-sm">{card.carModel}</div>
-                      <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{card.plateNumber}</div>
+                      <div className="text-label">{card.carModel}</div>
+                      <div className="text-[10px] text-white/20">{card.plateNumber}</div>
                     </div>
                   </div>
                   <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-white transition-all" />
@@ -184,7 +184,7 @@ export default function CabinetPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setSelectedCard(null)}
-                className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                className="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm"
               />
               <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -195,7 +195,7 @@ export default function CabinetPage() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-apple-red/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
                 
                 <div className="flex items-center justify-between relative z-10">
-                  <h2 className="text-xl font-bold">Детали визитки</h2>
+                  <h2 className="heading-section">Детали визитки</h2>
                   <button 
                     onClick={() => setSelectedCard(null)}
                     className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
@@ -215,6 +215,7 @@ export default function CabinetPage() {
                           size={200}
                           level="Q"
                           includeMargin={true}
+                          fgColor={selectedCard.themeColor}
                           imageSettings={{
                             src: "/logo.png?v=3",
                             x: undefined,
@@ -226,26 +227,26 @@ export default function CabinetPage() {
                         />
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-2">Ваш QR-код</p>
+                    <p className="text-caption mt-2">Ваш QR-код</p>
                   </div>
 
                   <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-500 uppercase font-bold">Автомобиль</span>
-                      <span className="text-base font-bold">{selectedCard.carModel}</span>
+                      <span className="text-caption">Автомобиль</span>
+                      <span className="text-label">{selectedCard.carModel}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-500 uppercase font-bold">Госномер</span>
-                      <span className="text-base font-mono font-bold uppercase">{selectedCard.plateNumber}</span>
+                      <span className="text-caption">Госномер</span>
+                      <span className="text-label">{selectedCard.plateNumber}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs text-gray-500 uppercase font-bold">Владелец</span>
-                      <span className="text-base font-bold">{selectedCard.ownerName}</span>
+                      <span className="text-caption">Владелец</span>
+                      <span className="text-label">{selectedCard.ownerName}</span>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <p className="text-xs text-gray-600 text-center px-4">
+                    <p className="text-body-sm text-center px-4">
                       Это данные вашей визитки. Люди увидят их при сканировании вашего QR-кода.
                     </p>
                     <Link
@@ -286,8 +287,12 @@ export default function CabinetPage() {
         </AnimatePresence>
 
         {/* Footer Info */}
-        <div className="text-center pt-4">
-          <p className="text-xs text-gray-600 uppercase tracking-[0.2em] font-bold">
+        <div className="text-center pt-4 space-y-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+            <ShieldCheck className="w-6 h-6 text-apple-red" />
+            <span className="text-caption text-white/60">Мы не храним ваши данные на сервере. Все данные кодируются прямо в QR-код.</span>
+          </div>
+          <p className="text-caption">
             Личный кабинет CarQR • Безопасно и конфиденциально
           </p>
         </div>

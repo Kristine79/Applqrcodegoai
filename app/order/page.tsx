@@ -96,7 +96,7 @@ export default function OrderPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center justify-center p-6 text-center">
         <motion.div 
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -104,13 +104,13 @@ export default function OrderPage() {
         >
           <Check className="w-10 h-10 text-green-500" />
         </motion.div>
-        <h1 className="text-2xl font-bold mb-2">Заказ принят!</h1>
-        <p className="text-gray-400 max-w-xs mb-8">
+        <h1 className="heading-display mb-2">Заказ принят!</h1>
+        <p className="text-body text-gray-400 max-w-xs mb-8">
           Мы свяжемся с вами в ближайшее время для подтверждения деталей оплаты и доставки.
         </p>
         <Link 
           href="/"
-          className="py-4 px-8 bg-apple-red rounded-2xl font-bold hover:scale-105 transition-all"
+          className="py-4 px-8 bg-apple-red rounded-2xl heading-card hover:scale-105 transition-all"
         >
           Вернуться на главную
         </Link>
@@ -119,14 +119,14 @@ export default function OrderPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white pb-12">
+    <div className="min-h-screen bg-zinc-950 text-white pb-12">
       {/* Header */}
       <header className="glass-panel sticky top-0 z-50 mx-2 mt-2 px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 relative rounded-lg overflow-hidden border border-white/10">
             <Image src="/logo.png" alt="Logo" fill sizes="32px" className="object-cover" />
           </div>
-          <span className="font-bold text-lg tracking-tight">CarQR</span>
+          <span className="heading-section">CarQR</span>
         </Link>
         <Link href="/" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all">
           <ArrowLeft className="w-5 h-5" />
@@ -135,14 +135,14 @@ export default function OrderPage() {
 
       <main className="max-w-xl mx-auto p-4 space-y-6">
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">Заказать наклейку</h1>
-          <p className="text-gray-500 text-sm">Профессиональная печать вашего QR-кода</p>
+          <h1 className="heading-display">Заказать наклейку</h1>
+          <p className="text-caption text-gray-500">Профессиональная печать вашего QR-кода</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Sticker Type */}
           <section className="space-y-3">
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Тип наклейки</h2>
+            <h2 className="text-label text-gray-500 ml-1">Тип наклейки</h2>
             <div className="grid grid-cols-1 gap-3">
               <button
                 type="button"
@@ -157,8 +157,8 @@ export default function OrderPage() {
                   <ShieldCheck className={`w-5 h-5 ${formData.type === 'standard' ? 'text-apple-red' : 'text-gray-500'}`} />
                 </div>
                 <div>
-                  <div className="font-bold text-base">Стандартная</div>
-                  <p className="text-xs text-gray-500 mt-1">Виниловая пленка, клей снаружи. Классический вариант для кузова или стекла.</p>
+                  <div className="heading-card">Стандартная</div>
+                  <p className="text-caption text-gray-500 mt-1">Виниловая пленка, клей снаружи. Классический вариант для кузова или стекла.</p>
                 </div>
                 {formData.type === 'standard' && <Check className="w-5 h-5 text-apple-red ml-auto shrink-0" />}
               </button>
@@ -176,8 +176,8 @@ export default function OrderPage() {
                   <Zap className={`w-5 h-5 ${formData.type === 'premium' ? 'text-apple-red' : 'text-gray-500'}`} />
                 </div>
                 <div>
-                  <div className="font-bold text-base">Премиум</div>
-                  <p className="text-xs text-gray-500 mt-1">Статическая пленка, клеится изнутри салона. УФ-защита, не оставляет следов клея.</p>
+                  <div className="heading-card">Премиум</div>
+                  <p className="text-caption text-gray-500 mt-1">Статическая пленка, клеится изнутри салона. УФ-защита, не оставляет следов клея.</p>
                 </div>
                 {formData.type === 'premium' && <Check className="w-5 h-5 text-apple-red ml-auto shrink-0" />}
               </button>
@@ -189,9 +189,9 @@ export default function OrderPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Maximize className="w-4 h-4 text-apple-red" />
-                <h2 className="text-sm font-bold">Размер наклейки</h2>
+                <h2 className="heading-card">Размер наклейки</h2>
               </div>
-              <span className="text-apple-red font-bold">{formData.size}x{formData.size} см</span>
+              <span className="text-apple-red heading-card">{formData.size}x{formData.size} см</span>
             </div>
             
             <div className="space-y-4">
@@ -205,7 +205,7 @@ export default function OrderPage() {
                 onChange={handleInputChange}
                 className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-apple-red"
               />
-              <div className="flex justify-between text-[10px] text-gray-600 font-bold uppercase tracking-widest">
+              <div className="flex justify-between text-label text-gray-600">
                 <span>10 см</span>
                 <span>12.5 см</span>
                 <span>15 см</span>
@@ -226,8 +226,8 @@ export default function OrderPage() {
                   <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${formData.isUrgent ? 'translate-x-4' : ''}`}></div>
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm font-bold group-hover:text-apple-red transition-colors">Срочное производство</div>
-                  <p className="text-[10px] text-gray-500 uppercase tracking-widest">+30% к стоимости, готовность за 24 часа</p>
+                  <div className="heading-card group-hover:text-apple-red transition-colors">Срочное производство</div>
+                  <p className="text-label text-gray-500">+30% к стоимости, готовность за 24 часа</p>
                 </div>
               </label>
             </div>
@@ -237,7 +237,7 @@ export default function OrderPage() {
           <section className="space-y-4">
             <div className="flex items-center gap-2 ml-1">
               <Truck className="w-4 h-4 text-apple-red" />
-              <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Доставка и адрес</h2>
+              <h2 className="text-label text-gray-500">Доставка и адрес</h2>
             </div>
             
             <div className="glass-card p-5 space-y-4">
@@ -250,7 +250,7 @@ export default function OrderPage() {
                     value={formData.fullName}
                     onChange={handleInputChange}
                     placeholder="ФИО получателя"
-                    className="w-full bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-apple-red transition-all outline-none"
+                    className="w-full bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 py-3 text-body focus:border-apple-red transition-all outline-none"
                   />
                 </div>
 
@@ -264,7 +264,7 @@ export default function OrderPage() {
                       value={formData.phone}
                       onChange={handleInputChange}
                       placeholder="Телефон"
-                      className="w-full bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-apple-red transition-all outline-none"
+                      className="w-full bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 py-3 text-body focus:border-apple-red transition-all outline-none"
                     />
                   </div>
                   <div className="relative">
@@ -276,7 +276,7 @@ export default function OrderPage() {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="Email"
-                      className="w-full bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm focus:border-apple-red transition-all outline-none"
+                      className="w-full bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 py-3 text-body focus:border-apple-red transition-all outline-none"
                     />
                   </div>
                 </div>
@@ -289,7 +289,7 @@ export default function OrderPage() {
                       value={formData.index}
                       onChange={handleInputChange}
                       placeholder="Индекс"
-                      className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-apple-red transition-all outline-none"
+                      className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-body focus:border-apple-red transition-all outline-none"
                     />
                   </div>
                   <div className="col-span-2">
@@ -299,7 +299,7 @@ export default function OrderPage() {
                       value={formData.city}
                       onChange={handleInputChange}
                       placeholder="Город"
-                      className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-apple-red transition-all outline-none"
+                      className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-body focus:border-apple-red transition-all outline-none"
                     />
                   </div>
                 </div>
@@ -312,7 +312,7 @@ export default function OrderPage() {
                       value={formData.street}
                       onChange={handleInputChange}
                       placeholder="Улица"
-                      className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-apple-red transition-all outline-none"
+                      className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-body focus:border-apple-red transition-all outline-none"
                     />
                   </div>
                   <div className="col-span-1">
@@ -322,7 +322,7 @@ export default function OrderPage() {
                       value={formData.house}
                       onChange={handleInputChange}
                       placeholder="Дом/кв"
-                      className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-sm focus:border-apple-red transition-all outline-none"
+                      className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-body focus:border-apple-red transition-all outline-none"
                     />
                   </div>
                 </div>
@@ -334,12 +334,12 @@ export default function OrderPage() {
           <section className="sticky bottom-4 left-0 right-0 z-40">
             <div className="glass-panel p-5 shadow-2xl border border-white/10 flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Итого к оплате</p>
+                <p className="text-label text-gray-500">Итого к оплате</p>
                 <p className="text-2xl font-black text-white">{calculatePrice()} ₽</p>
               </div>
               <button
                 disabled={isSubmitting}
-                className="bg-apple-red text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-2 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
+                className="bg-apple-red text-white px-8 py-4 rounded-2xl heading-card flex items-center gap-2 hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
               >
                 {isSubmitting ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -356,24 +356,30 @@ export default function OrderPage() {
 
         <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
           <Info className="w-5 h-5 text-gray-500 shrink-0" />
-          <p className="text-[10px] text-gray-500 leading-relaxed">
+          <p className="text-caption text-gray-500 leading-relaxed">
             После оплаты мы сгенерируем макет вашей наклейки на основе данных из вашего профиля и отправим в производство. Доставка осуществляется Почтой России или СДЭК.
           </p>
         </div>
 
         {/* Footer */}
-        <footer className="pt-8 pb-4 border-t border-white/5 flex flex-col items-center gap-4">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors cursor-pointer">
-              <Headphones className="w-4 h-4" />
-              <span className="text-xs font-medium">Техподдержка</span>
+        <footer className="pt-8 pb-4 border-t border-white/5 flex flex-col items-center gap-6">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
+              <ShieldCheck className="w-6 h-6 text-apple-red" />
+              <span className="text-caption text-white/60">Мы не храним ваши данные на сервере. Все данные кодируются прямо в QR-код.</span>
             </div>
-            <a href="mailto:info@premiumwebsite.ru" className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors">
-              <Mail className="w-4 h-4" />
-              <span className="text-xs font-medium">info@premiumwebsite.ru</span>
-            </a>
+            <div className="flex items-center gap-4 text-xs font-bold">
+              <span className="text-white/30">Поддержка:</span>
+              <a 
+                href="mailto:info@premiumwebsite.ru" 
+                className="flex items-center gap-2 text-white/60 hover:text-apple-red transition-colors"
+              >
+                <Mail className="w-4 h-4" />
+                info@premiumwebsite.ru
+              </a>
+            </div>
           </div>
-          <p className="text-[10px] text-gray-600 font-medium uppercase tracking-widest">© 2024 CarQR Project</p>
+          <p className="text-label text-gray-600">© 2026 CarQR Project</p>
         </footer>
       </main>
     </div>

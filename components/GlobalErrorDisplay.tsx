@@ -13,15 +13,15 @@ export default function GlobalErrorDisplay() {
         <div className="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-red-500/30">
           <span className="text-2xl">⚠️</span>
         </div>
-        <h2 className="text-2xl font-bold mb-2">Критическая ошибка</h2>
-        <p id="global-error-message" className="text-white/60 mb-6 text-sm font-medium"></p>
+        <h2 className="heading-display mb-2">Критическая ошибка</h2>
+        <p id="global-error-message" className="text-body text-white/60 mb-6"></p>
         <div className="mb-8 p-4 bg-black/40 rounded-xl border border-white/5 text-left overflow-x-auto">
-          <p className="text-[10px] font-mono text-white/30 uppercase mb-2 tracking-widest">Technical Details</p>
+          <p className="text-label text-white/30 mb-2">Technical Details</p>
           <pre id="global-error-stack" className="text-[10px] font-mono text-red-400/70 whitespace-pre-wrap break-all"></pre>
         </div>
         <button
           onClick={() => window.location.reload()}
-          className="w-full py-4 px-8 rounded-2xl bg-white/10 text-white font-bold hover:bg-white/20 transition-all"
+          className="w-full py-4 px-8 rounded-2xl bg-white/10 text-white heading-card hover:bg-white/20 transition-all"
         >
           Перезагрузить страницу
         </button>

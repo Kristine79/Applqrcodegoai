@@ -113,7 +113,7 @@ export default function PublicCardView() {
 
   if (!card) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-black p-8 text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-950 p-8 text-center">
         <div className="w-20 h-20 bg-white/5 rounded-[2rem] flex items-center justify-center mb-6 border border-white/10">
           <Info className="w-10 h-10 text-gray-400" />
         </div>
@@ -135,7 +135,7 @@ export default function PublicCardView() {
 
   return (
     <div 
-      className="min-h-screen pb-12 bg-black text-white font-sans selection:bg-apple-red selection:text-white"
+      className="min-h-screen pb-12 bg-zinc-950 text-white font-sans selection:bg-apple-red selection:text-white"
       suppressHydrationWarning
     >
       {/* Background Glows */}
@@ -182,7 +182,7 @@ export default function PublicCardView() {
               {card.carModel}
             </h1>
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl shadow-2xl transform -rotate-1 border border-white/10">
-              <span className="text-xl font-black tracking-widest text-white uppercase font-mono">
+              <span className="text-xl font-black text-white">
                 {card.plateNumber}
               </span>
             </div>
@@ -215,7 +215,7 @@ export default function PublicCardView() {
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-1.5 ${isSent ? 'bg-green-500/20' : 'bg-apple-red/10'}`}>
                     <Icon className={`w-4 h-4 ${isSent ? 'text-green-500 animate-pulse' : 'text-apple-red'}`} />
                   </div>
-                  <span className="font-bold text-[10px] uppercase tracking-widest text-center text-gray-500">
+                  <span className="font-bold text-[10px] text-center text-gray-500">
                     {isSent ? 'Отправлено!' : config.label}
                   </span>
                 </motion.button>
@@ -231,7 +231,7 @@ export default function PublicCardView() {
               <div className="w-6 h-6 rounded-lg bg-apple-red/20 flex items-center justify-center">
                 <User className="w-3 h-3 text-apple-red" />
               </div>
-              <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400">
+              <h3 className="text-xs font-bold text-gray-400">
                 Владелец авто
               </h3>
             </div>
@@ -318,7 +318,7 @@ export default function PublicCardView() {
 
         {/* Share Section */}
         <section className="glass-card p-5 space-y-4">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em] text-center">Поделиться ссылкой на приложение</p>
+          <p className="text-[10px] font-bold text-gray-500 text-center">Поделиться ссылкой на приложение</p>
           <div className="flex justify-center gap-3">
             <button
               onClick={() => {
@@ -376,7 +376,7 @@ export default function PublicCardView() {
 
       <footer className="mt-8 mb-6 text-center space-y-5 px-5">
         <div className="flex flex-col items-center gap-3">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-[0.3em]">Закажи qr код бесплатно</p>
+          <p className="text-[10px] font-bold text-gray-500">Закажи qr код бесплатно</p>
           <div className="flex items-center justify-center">
             <a 
               href="https://carqr-free.vercel.app" 
@@ -390,7 +390,7 @@ export default function PublicCardView() {
           </div>
         </div>
         <div className="pt-4 border-t border-white/10">
-          <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">© 2026 CarQR. Все права защищены.</p>
+          <p className="text-[10px] text-gray-600 font-bold">© 2026 CarQR. Все права защищены.</p>
         </div>
       </footer>
 
@@ -401,7 +401,7 @@ export default function PublicCardView() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex flex-col bg-black/95 backdrop-blur-2xl"
+            className="fixed inset-0 z-50 flex flex-col bg-zinc-950/95 backdrop-blur-2xl"
           >
             {/* Header */}
             <header className="flex items-center justify-between px-8 py-6 border-b border-white/10">
@@ -424,6 +424,7 @@ export default function PublicCardView() {
                     size={280}
                     level="Q"
                     includeMargin={true}
+                    fgColor={card.themeColor}
                   />
                 </div>
               </div>
