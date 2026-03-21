@@ -434,12 +434,12 @@ export default function Home() {
     <div className="min-h-screen bg-black text-white selection:bg-apple-red selection:text-white transition-colors duration-300" suppressHydrationWarning>
       <header className="glass-panel sticky top-0 z-50 mx-2 mt-2 px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="w-9 h-9 relative rounded-lg overflow-hidden shadow-lg border border-white/10">
+          <div className="w-[46px] h-[46px] relative rounded-lg overflow-hidden shadow-lg border border-white/10">
             <Image 
               src="/logo.png" 
               alt="CarQR Logo" 
               fill 
-              sizes="36px"
+              sizes="46px"
               className="object-cover"
               referrerPolicy="no-referrer"
             />
@@ -548,12 +548,12 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-32 h-32 bg-apple-red/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
           
                   <div className="flex flex-col items-center text-center gap-1.5 mb-5 relative z-10">
-            <div className="w-12 h-12 relative rounded-xl overflow-hidden border border-white/20 shadow-2xl">
+            <div className="w-[58px] h-[58px] relative rounded-xl overflow-hidden border border-white/20 shadow-2xl">
               <Image 
                 src="/logo.png" 
                 alt="Logo" 
                 fill 
-                sizes="48px"
+                sizes="58px"
                 className="object-cover"
                 referrerPolicy="no-referrer"
               />
