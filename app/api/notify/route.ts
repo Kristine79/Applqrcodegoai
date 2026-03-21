@@ -4,12 +4,15 @@ export async function POST(req: Request) {
   try {
     const { chatId, message } = await req.json();
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
+    const adminChatId = process.env.ADMIN_CHAT_ID || '402396098';
 
     if (!botToken) {
       return NextResponse.json({ error: 'Telegram Bot Token is not configured' }, { status: 500 });
     }
 
-    if (!chatId) {
+    const targetChatId = (chatId || adminChatId)?.toString().trim();
+
+    if (!targetChatId) {
       return NextResponse.json({ error: 'Chat ID is missing' }, { status: 400 });
     }
 
@@ -19,7 +22,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        chat_id: chatId,
+        chat_id: targetChatId,
         text: message,
         parse_mode: 'HTML',
       }),

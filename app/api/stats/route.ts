@@ -8,6 +8,9 @@ function getStats() {
   try {
     if (fs.existsSync(STATS_FILE)) {
       const data = fs.readFileSync(STATS_FILE, 'utf8');
+      if (!data || data.trim() === '') {
+        return { totalScans: 0, cardScans: {} };
+      }
       return JSON.parse(data);
     }
   } catch (e) {

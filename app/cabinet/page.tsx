@@ -5,13 +5,12 @@ import Image from 'next/image';
 import { 
   Car, 
   User, 
-  QrCode, 
   ChevronRight, 
   ArrowLeft,
-  Calendar,
   ShieldCheck,
   CreditCard,
-  X
+  X,
+  Download
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useRouter } from 'next/navigation';
@@ -31,7 +30,7 @@ export default function CabinetPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const saved = localStorage.getItem(SAVED_CARDS_KEY);
-    if (saved) {
+    if (saved && saved.trim() !== '') {
       try {
         setSavedCards(JSON.parse(saved));
       } catch (e) {
@@ -39,6 +38,62 @@ export default function CabinetPage() {
       }
     }
   }, []);
+
+  const deleteCard = (index: number) => {
+    const newCards = savedCards.filter((_, i) => i !== index);
+    setSavedCards(newCards);
+    localStorage.setItem(SAVED_CARDS_KEY, JSON.stringify(newCards));
+    setSelectedCard(null);
+  };
+
+  const editCard = (card: CarCardData) => {
+    localStorage.setItem('carqr_draft', JSON.stringify(card));
+    router.push('/');
+  };
+
+  const exportCards = () => {
+    const dataStr = JSON.stringify(savedCards);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const exportFileDefaultName = 'carqr_backup.json';
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
+  const importCards = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // ... logic removed ...
+  };
+
+  const testNotification = async () => {
+    try {
+      const res = await fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: '🔔 <b>Тестовое уведомление!</b>\n\nВаш бот успешно подключен к приложению CarQR.'
+        }),
+      });
+      
+      const text = await res.text();
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        console.error('Failed to parse notify response:', text.slice(0, 100));
+        data = { error: 'Invalid server response' };
+      }
+
+      if (res.ok && data.success) {
+        alert('Тестовое уведомление отправлено! Проверьте свой Telegram.');
+      } else {
+        alert(`Ошибка: ${data.error || 'Неизвестная ошибка'}`);
+      }
+    } catch (err) {
+      alert('Ошибка при отправке уведомления. Проверьте консоль.');
+      console.error(err);
+    }
+  };
 
   if (!mounted) return null;
 
@@ -94,6 +149,24 @@ export default function CabinetPage() {
             <span className="text-lg font-bold">0</span>
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Уведомлений</span>
           </div>
+        </div>
+
+        {/* Backup Actions */}
+        <div className="flex flex-col gap-2.5">
+          <button
+            onClick={exportCards}
+            className="w-full glass-panel p-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-white/5 transition-all"
+          >
+            <Download className="w-3.5 h-3.5 text-gray-400" />
+            Экспорт данных (бэкап)
+          </button>
+          <button
+            onClick={testNotification}
+            className="w-full glass-panel p-2.5 flex items-center justify-center gap-2 text-[10px] font-bold uppercase tracking-widest hover:bg-apple-red/10 transition-all text-apple-red border border-apple-red/20"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Проверить уведомления
+          </button>
         </div>
 
         {/* Cards List */}
@@ -216,9 +289,26 @@ export default function CabinetPage() {
                     <p className="text-xs text-gray-600 text-center px-4">
                       Это данные вашей визитки. Люди увидят их при сканировании вашего QR-кода.
                     </p>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      <button
+                        onClick={() => selectedCard && editCard(selectedCard)}
+                        className="py-3 bg-white/5 text-white rounded-xl text-sm font-bold hover:bg-white/10 transition-all"
+                      >
+                        Редактировать
+                      </button>
+                      <button
+                        onClick={() => {
+                          const idx = savedCards.findIndex(c => c.plateNumber === selectedCard.plateNumber && c.carModel === selectedCard.carModel);
+                          if (idx !== -1) deleteCard(idx);
+                        }}
+                        className="py-3 bg-apple-red/10 text-apple-red rounded-xl text-sm font-bold hover:bg-apple-red/20 transition-all border border-apple-red/20"
+                      >
+                        Удалить
+                      </button>
+                    </div>
                     <button
                       onClick={() => setSelectedCard(null)}
-                      className="w-full py-3 bg-white/5 text-gray-400 rounded-xl text-sm font-bold hover:bg-white/10 transition-all mt-2"
+                      className="w-full py-3 bg-white/5 text-gray-400 rounded-xl text-sm font-bold hover:bg-white/10 transition-all"
                     >
                       Закрыть
                     </button>

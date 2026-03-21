@@ -71,7 +71,7 @@ export default function Home() {
     setMounted(true);
     
     const draft = localStorage.getItem(STORAGE_KEY);
-    if (draft) {
+    if (draft && draft.trim() !== '') {
       try {
         const parsed = JSON.parse(draft);
         setFormData(prev => ({ ...prev, ...parsed }));
@@ -81,7 +81,7 @@ export default function Home() {
     }
 
     const saved = localStorage.getItem(SAVED_CARDS_KEY);
-    if (saved) {
+    if (saved && saved.trim() !== '') {
       try {
         setSavedCards(JSON.parse(saved));
       } catch (e) {
@@ -99,7 +99,21 @@ export default function Home() {
 
     // Fetch stats
     fetch('/api/stats')
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const text = await res.text();
+        if (!text || text.trim() === '') {
+          return { totalScans: 0, cardScans: {} };
+        }
+        try {
+          return JSON.parse(text);
+        } catch (e) {
+          console.error('Failed to parse stats JSON:', text.slice(0, 100));
+          throw e;
+        }
+      })
       .then(data => setStats(data))
       .catch(err => console.error('Error fetching stats:', err));
 
@@ -116,11 +130,38 @@ export default function Home() {
   }, [formData, mounted]);
 
   const saveCardToProfile = () => {
+    // Check if card already exists
+    const exists = savedCards.some(c => c.plateNumber === formData.plateNumber && c.carModel === formData.carModel);
+    if (exists) {
+      router.push('/cabinet');
+      return;
+    }
+
     const newSaved = [...savedCards, { ...formData }];
     setSavedCards(newSaved);
     localStorage.setItem(SAVED_CARDS_KEY, JSON.stringify(newSaved));
     triggerVibration(50);
     router.push('/cabinet');
+  };
+
+  const clearDraft = () => {
+    setFormData({
+      carModel: '',
+      plateNumber: '',
+      ownerName: '',
+      phone1: '',
+      telegram: '',
+      whatsapp: '',
+      max: '',
+      showContact: true,
+      quickButtons: ['evacuation', 'damage', 'message'],
+      themeColor: '#991b1b',
+      backgroundColor: '#000000',
+      textColor: '#ffffff',
+      qrText: '',
+    });
+    localStorage.removeItem(STORAGE_KEY);
+    triggerVibration(20);
   };
 
   const validateField = useCallback((name: string, value: string) => {
@@ -236,6 +277,33 @@ export default function Home() {
     setIsGenerating(false);
     setIsSuccess(true);
     
+    // Auto-save to profile if not already there
+    const exists = savedCards.some(c => c.plateNumber === formData.plateNumber && c.carModel === formData.carModel);
+    if (!exists) {
+      const newSaved = [...savedCards, { ...formData }];
+      setSavedCards(newSaved);
+      localStorage.setItem(SAVED_CARDS_KEY, JSON.stringify(newSaved));
+    }
+
+    // Notify admin via Telegram
+    try {
+      fetch('/api/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: `🚗 <b>Новая визитка создана!</b>\n\n<b>Авто:</b> ${formData.carModel}\n<b>Госномер:</b> ${formData.plateNumber}\n<b>Владелец:</b> ${formData.ownerName}\n<b>Телефон:</b> ${formData.phone1}\n\n<a href="${url}">Посмотреть визитку</a>`
+        }),
+      }).then(res => res.json()).then(data => {
+        if (data.error) {
+          console.error('Telegram notification error:', data.error);
+        } else {
+          console.log('Telegram notification sent successfully');
+        }
+      });
+    } catch (err) {
+      console.error('Failed to send admin notification:', err);
+    }
+
     setTimeout(() => {
       setShowQR(true);
       setIsSuccess(false);
@@ -446,6 +514,36 @@ export default function Home() {
           </AnimatePresence>
         </div>
 
+        {/* Recent Cards Section */}
+        {savedCards.length > 0 && (
+          <div className="glass-card p-3 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-2 px-1">
+              <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Недавние визитки</h3>
+              <Link href="/cabinet" className="text-[10px] font-bold text-apple-red uppercase tracking-widest hover:opacity-80 transition-opacity">Все</Link>
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {savedCards.slice(-5).reverse().map((card, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setFormData(card);
+                    triggerVibration(10);
+                  }}
+                  className="flex-shrink-0 glass-panel p-2 flex items-center gap-2 min-w-[140px] hover:bg-white/5 transition-all text-left"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+                    <Car className="w-3.5 h-3.5 text-gray-400" />
+                  </div>
+                  <div className="overflow-hidden">
+                    <div className="text-[10px] font-bold truncate">{card.carModel}</div>
+                    <div className="text-[8px] font-mono text-gray-500 uppercase tracking-widest truncate">{card.plateNumber}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="glass-card p-4 md:p-5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-apple-red/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
           
@@ -464,6 +562,14 @@ export default function Home() {
               <h1 className="text-xl font-bold tracking-tight">Создать визитку</h1>
               <p className="text-gray-500 text-xs font-medium">Безопасное шифрование данных</p>
             </div>
+            <button
+              type="button"
+              onClick={clearDraft}
+              className="absolute top-4 right-4 text-gray-600 hover:text-apple-red transition-colors"
+              title="Очистить форму"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Instruction Section */}
