@@ -59,19 +59,35 @@
   }
   
   .text-body {
-    @apply text-base text-white/70 leading-relaxed;
+    @apply text-base text-white/90 leading-relaxed;
   }
 
   .text-body-sm {
-    @apply text-sm text-white/60 leading-relaxed;
+    @apply text-sm text-white/80 leading-relaxed;
   }
   
   .text-caption {
-    @apply text-xs font-medium text-white/40 normal-case tracking-normal;
+    @apply text-[11px] font-medium text-white/40 uppercase tracking-wider;
   }
   
   .text-label {
-    @apply text-sm font-semibold text-white/90 tracking-tight;
+    @apply text-sm font-semibold text-white/70 tracking-tight;
+  }
+
+  .text-primary {
+    @apply text-white;
+  }
+
+  .text-secondary {
+    @apply text-white/60;
+  }
+
+  .text-tertiary {
+    @apply text-white/40;
+  }
+
+  .text-muted {
+    @apply text-white/20;
   }
 
   .glass-panel {

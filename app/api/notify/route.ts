@@ -1,8 +1,28 @@
 import { NextResponse } from 'next/server';
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 export async function POST(request: Request) {
   try {
-    const { message } = await request.json();
+    const { message, data: rawData } = await request.json();
+    
+    // If rawData is provided, construct a safe message
+    let finalMessage = message;
+    if (rawData) {
+      finalMessage = `🚗 <b>Новая визитка создана!</b>\n\n` +
+        `<b>Авто:</b> ${escapeHtml(rawData.carModel)}\n` +
+        `<b>Госномер:</b> ${escapeHtml(rawData.plateNumber)}\n` +
+        `<b>Владелец:</b> ${escapeHtml(rawData.ownerName)}\n` +
+        `<b>Телефон:</b> ${escapeHtml(rawData.phone1)}\n\n` +
+        `<a href="${rawData.url}">Посмотреть визитку</a>`;
+    }
     // Try different common environment variable names
     const token = (
       process.env.NOTIFY_BOT_TOKEN || 
@@ -19,8 +39,16 @@ export async function POST(request: Request) {
     }
 
     // Ensure token doesn't start with 'bot' prefix if user accidentally included it
-    // Telegram API URL should be .../bot123:ABC/... but the token itself is 123:ABC
     const cleanToken = token.toLowerCase().startsWith('bot') ? token.slice(3) : token;
+
+    // Basic Telegram token format validation (e.g., 123456789:ABC...)
+    const tokenRegex = /^\d+:[a-zA-Z0-9_-]{35,}$/;
+    if (!tokenRegex.test(cleanToken)) {
+      console.error('Notification Error: Telegram bot token format is invalid.');
+      return NextResponse.json({ 
+        error: `Invalid Telegram bot token format. It should look like '123456789:ABC...'. Current masked token: ${cleanToken.slice(0, 4)}...${cleanToken.slice(-4)}` 
+      }, { status: 400 });
+    }
 
     // Log masked token for server-side debugging
     console.log(`Attempting to send Telegram message. Token starts with: ${cleanToken.slice(0, 4)}... ends with: ...${cleanToken.slice(-4)}`);
@@ -31,7 +59,7 @@ export async function POST(request: Request) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: chatId,
-        text: message,
+        text: finalMessage || message,
         parse_mode: 'HTML',
       }),
     });
@@ -39,7 +67,12 @@ export async function POST(request: Request) {
     const data = await response.json();
 
     if (!data.ok) {
-      return NextResponse.json({ error: data.description }, { status: 400 });
+      let errorMessage = data.description;
+      if (response.status === 404) {
+        errorMessage = `Telegram API returned 404 Not Found. This usually means the bot token is invalid. Please check your NOTIFY_BOT_TOKEN environment variable. Current token (masked): ${cleanToken.slice(0, 4)}...${cleanToken.slice(-4)}`;
+      }
+      console.error('Telegram API Error:', data);
+      return NextResponse.json({ error: errorMessage }, { status: response.status });
     }
 
     return NextResponse.json({ success: true });

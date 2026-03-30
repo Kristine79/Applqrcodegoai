@@ -50,8 +50,13 @@ export default function Home() {
     { src: 'https://picsum.photos/seed/car-sticker-1/800/600', title: 'Вид спереди', desc: 'Размещение на лобовом стекле' },
     { src: 'https://picsum.photos/seed/car-sticker-2/800/600', title: 'Вид сбоку', desc: 'Размещение на боковом стекле' },
     { src: 'https://picsum.photos/seed/car-sticker-3/800/600', title: 'Вид сзади', desc: 'Размещение на заднем стекле' },
+    { src: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=800&h=600', title: 'Mercedes G-class', desc: 'Пример размещения на заднем стекле внедорожника' },
+    { src: 'https://picsum.photos/seed/car-qr-4/800/600', title: 'Стиль и минимализм', desc: 'Вариант для любого типа кузова' },
   ];
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
   const [stats, setStats] = useState<{ totalScans: number; cardScans: Record<string, number> } | null>(null);
   const [showStats, setShowStats] = useState(false);
   const [savedCards, setSavedCards] = useState<CarCardData[]>([]);
@@ -104,6 +109,15 @@ export default function Home() {
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // Check if iOS
+    const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    
+    setIsIOS(isIOSDevice);
+    if (isIOSDevice && !isStandalone) {
+      setShowInstallBanner(true);
+    }
 
     // Fetch metrics
     fetch('/api/metrics')
@@ -299,7 +313,13 @@ export default function Home() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: `🚗 <b>Новая визитка создана!</b>\n\n<b>Авто:</b> ${formData.carModel}\n<b>Госномер:</b> ${formData.plateNumber}\n<b>Владелец:</b> ${formData.ownerName}\n<b>Телефон:</b> ${formData.phone1}\n\n<a href="${url}">Посмотреть визитку</a>`
+          data: {
+            carModel: formData.carModel,
+            plateNumber: formData.plateNumber,
+            ownerName: formData.ownerName,
+            phone1: formData.phone1,
+            url: url
+          }
         }),
       }).then(res => res.json()).then(data => {
         if (data.error) {
@@ -422,6 +442,15 @@ export default function Home() {
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
       setDeferredPrompt(null);
+      setShowInstallBanner(false);
+    }
+  };
+
+  const handleInstallClick = () => {
+    if (isIOS) {
+      setShowIOSInstructions(true);
+    } else {
+      installPWA();
     }
   };
 
@@ -552,6 +581,45 @@ export default function Home() {
       </header>
 
       <main className="max-w-xl mx-auto p-2 space-y-3">
+        {/* PWA Install Banner */}
+        <AnimatePresence>
+          {(deferredPrompt || (isIOS && showInstallBanner)) && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="glass-card p-4 relative overflow-hidden border-apple-red/30"
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-apple-red/10 rounded-full -mr-12 -mt-12 blur-2xl"></div>
+              <div className="flex items-center justify-between gap-4 relative z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-apple-red/20 flex items-center justify-center flex-shrink-0">
+                    <Package className="w-5 h-5 text-apple-red" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">Установите CarQR</h3>
+                    <p className="text-[10px] text-secondary leading-tight">Быстрый доступ к вашим визиткам прямо с рабочего стола</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowInstallBanner(false)}
+                    className="p-2 text-tertiary hover:text-white transition-colors"
+                  >
+                    <Plus className="w-4 h-4 rotate-45" />
+                  </button>
+                  <button
+                    onClick={handleInstallClick}
+                    className="px-4 py-2 rounded-full bg-apple-red text-white text-xs font-bold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                  >
+                    Установить
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Admin Stats Section - Temporarily Commented Out
         <div className="glass-card p-3 relative overflow-hidden">
           <button
@@ -612,11 +680,11 @@ export default function Home() {
                   className="flex-shrink-0 glass-panel p-2 flex items-center gap-2 min-w-[140px] hover:bg-white/5 transition-all text-left"
                 >
                   <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
-                    <Car className="w-3.5 h-3.5 text-gray-400" />
+                    <Car className="w-3.5 h-3.5 text-secondary" />
                   </div>
                   <div className="overflow-hidden">
-                    <div className="text-label truncate">{card.carModel}</div>
-                    <div className="text-[8px] text-white/40 truncate">{card.plateNumber}</div>
+                    <div className="text-label text-primary truncate">{card.carModel}</div>
+                    <div className="text-[9px] text-tertiary font-medium truncate">{card.plateNumber}</div>
                   </div>
                 </button>
               ))}
@@ -640,7 +708,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="heading-section">Создать визитку</h1>
-              <p className="text-body-sm">Безопасное шифрование данных</p>
+              <p className="text-secondary text-sm">Безопасное шифрование данных</p>
             </div>
           </div>
 
@@ -665,21 +733,21 @@ export default function Home() {
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="pt-2 space-y-2 text-body-sm">
+                  <div className="pt-2 space-y-2 text-secondary text-sm">
                     <div className="flex gap-2">
-                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-xs">1</div>
+                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-[10px]">1</div>
                       <p>Заполните данные о вашем автомобиле и контактную информацию.</p>
                     </div>
                     <div className="flex gap-2">
-                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-xs">2</div>
+                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-[10px]">2</div>
                       <p>Сгенерируйте уникальный QR-код, который содержит зашифрованную ссылку.</p>
                     </div>
                     <div className="flex gap-2">
-                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-xs">3</div>
+                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-[10px]">3</div>
                       <p>Распечатайте код и разместите его под лобовым стеклом.</p>
                     </div>
                     <div className="flex gap-2">
-                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-xs">4</div>
+                      <div className="w-5 h-5 rounded-full bg-apple-red/20 flex items-center justify-center shrink-0 text-apple-red font-bold text-[10px]">4</div>
                       <p>Закажите оригинальную наклейку.</p>
                     </div>
                   </div>
@@ -729,7 +797,7 @@ export default function Home() {
                             value={formData.carModel || ''}
                             onChange={handleInputChange}
                             placeholder="Tesla Model 3"
-                            className={`w-full bg-white/5 border-2 ${errors.carModel ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-gray-600`}
+                            className={`w-full bg-white/5 border-2 ${errors.carModel ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary`}
                           />
                         </motion.div>
                       </div>
@@ -746,7 +814,7 @@ export default function Home() {
                             value={formData.plateNumber || ''}
                             onChange={handleInputChange}
                             placeholder="А123ВС 777"
-                            className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-gray-600`}
+                            className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary`}
                           />
                         </motion.div>
                       </div>
@@ -795,7 +863,7 @@ export default function Home() {
                             value={formData.ownerName || ''}
                             onChange={handleInputChange}
                             placeholder="Ваше имя"
-                            className={`w-full bg-white/5 border-2 ${errors.ownerName ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-gray-600`}
+                            className={`w-full bg-white/5 border-2 ${errors.ownerName ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary`}
                           />
                         </motion.div>
                       </div>
@@ -812,7 +880,7 @@ export default function Home() {
                             value={formData.phone1 || ''}
                             onChange={handleInputChange}
                             placeholder="Телефон"
-                            className={`w-full bg-white/5 border-2 ${errors.phone1 ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-gray-600`}
+                            className={`w-full bg-white/5 border-2 ${errors.phone1 ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary`}
                           />
                         </motion.div>
                       </div>
@@ -855,7 +923,7 @@ export default function Home() {
                           value={formData.telegram || ''}
                           onChange={handleInputChange}
                           placeholder="Telegram (username)"
-                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-gray-600"
+                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-white/30"
                         />
                       </div>
 
@@ -866,7 +934,7 @@ export default function Home() {
                           value={formData.whatsapp || ''}
                           onChange={handleInputChange}
                           placeholder="WhatsApp (+7...)"
-                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-gray-600"
+                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary"
                         />
                       </div>
                     </div>
@@ -912,11 +980,11 @@ export default function Home() {
                             className={`flex flex-col items-center justify-center min-h-[60px] p-2 rounded-xl border-2 transition-all active:scale-95 ${
                               isActive
                                 ? 'bg-apple-red border-transparent text-white red-glow'
-                                : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/10'
+                                : 'bg-white/5 border-white/5 text-white hover:border-white/10'
                             }`}
                           >
-                            <btn.icon className={`w-4 h-4 mb-1 ${isActive ? 'text-white' : 'text-white/20'}`} />
-                            <span className="text-caption text-center">
+                            <btn.icon className={`w-4 h-4 mb-1 text-white`} />
+                            <span className={`text-[10px] uppercase tracking-wider font-bold text-center text-white`}>
                               {btn.label}
                             </span>
                           </button>
@@ -970,20 +1038,20 @@ export default function Home() {
                             name="themeColor"
                             value={formData.themeColor}
                             onChange={handleInputChange}
-                            className="flex-1 bg-white/5 border-2 border-white/5 rounded-xl px-2 py-1.5 text-xs font-mono text-gray-500"
+                            className="flex-1 bg-white/5 border-2 border-white/5 rounded-xl px-2 py-1.5 text-xs font-mono text-secondary"
                           />
                         </div>
                       </div>
                       <div className="space-y-1.5">
                         <label className="text-caption ml-1">Текст рядом с QR</label>
                         <div className="relative">
-                          <Type className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-600" />
+                          <Type className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-tertiary" />
                           <input
                             name="qrText"
                             value={formData.qrText || ''}
                             onChange={handleInputChange}
                             placeholder="Сканируй меня!"
-                            className="w-full bg-white/5 border-2 border-white/5 rounded-xl pl-8 pr-3 py-2 text-base focus:border-apple-red outline-none transition-all placeholder:text-gray-600"
+                            className="w-full bg-white/5 border-2 border-white/5 rounded-xl pl-8 pr-3 py-2 text-base focus:border-apple-red outline-none transition-all placeholder:text-tertiary"
                           />
                         </div>
                       </div>
@@ -1027,58 +1095,84 @@ export default function Home() {
               </div>
             )}
           </form>
-
-          <div className="mt-8 flex justify-center">
-            <button
-              type="button"
-              onClick={() => {
-                triggerVibration(20);
-                setFormData({
-                  carModel: '',
-                  plateNumber: '',
-                  ownerName: '',
-                  phone1: '',
-                  telegram: '',
-                  whatsapp: '',
-                  max: '',
-                  showContact: true,
-                  quickButtons: ['evacuation', 'damage', 'message'],
-                  themeColor: '#991b1b',
-                  backgroundColor: '#000000',
-                  textColor: '#ffffff',
-                  qrText: '',
-                });
-                setErrors({});
-                localStorage.removeItem(STORAGE_KEY);
-              }}
-              className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-base font-bold py-3 px-6 rounded-2xl hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-800"
-            >
-              <AlertTriangle className="w-5 h-5 rotate-180" />
-              Очистить форму
-            </button>
-          </div>
         </div>
 
-        <footer className="mt-16 mb-8 text-center space-y-8 relative z-10">
+        <footer className="mt-12 mb-8 text-center space-y-6 relative z-10 px-4">
           <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-              <ShieldCheck className="w-6 h-6 text-apple-red" />
-              <span className="text-caption text-white/60">Мы не храним ваши данные на сервере. Все данные кодируются прямо в QR-код.</span>
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
+              <ShieldCheck className="w-4 h-4 text-apple-red" />
+              <span className="text-[10px] text-tertiary leading-tight max-w-[220px] text-left uppercase tracking-wider font-medium">
+                Данные не хранятся на сервере, а кодируются прямо в QR-код
+              </span>
             </div>
-            <div className="flex items-center gap-4 text-xs font-bold">
-              <span className="text-white/30">Поддержка:</span>
-              <a 
-                href="mailto:info@premiumwebsite.ru" 
-                className="flex items-center gap-2 text-white/60 hover:text-apple-red transition-colors"
-              >
-                <Mail className="w-4 h-4" />
-                info@premiumwebsite.ru
+            
+            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-widest">
+              <a href="mailto:info@premiumwebsite.ru" className="flex items-center gap-1.5 text-secondary hover:text-apple-red transition-colors">
+                <Mail className="w-3.5 h-3.5" />
+                Поддержка
               </a>
+              <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
+                Политика конфиденциальности
+              </Link>
+              <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
+                Обработка данных
+              </Link>
             </div>
           </div>
-          <p className="text-xs text-white/20 font-bold">© 2026 CarQR. Все права защищены.</p>
+          <p className="text-caption opacity-50">© 2026 CarQR. Все права защищены.</p>
         </footer>
       </main>
+
+      {/* iOS Install Instructions */}
+      <AnimatePresence>
+        {showIOSInstructions && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowIOSInstructions(false)}
+          >
+            <motion.div
+              initial={{ y: 100 }}
+              animate={{ y: 0 }}
+              exit={{ y: 100 }}
+              className="w-full max-w-sm glass-card p-6 space-y-6"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="text-center space-y-2">
+                <div className="w-16 h-16 mx-auto rounded-2xl bg-apple-red/20 flex items-center justify-center">
+                  <Package className="w-8 h-8 text-apple-red" />
+                </div>
+                <h3 className="text-xl font-bold">Установка на iOS</h3>
+                <p className="text-sm text-secondary">Следуйте инструкции ниже, чтобы добавить приложение на главный экран</p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/10">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">1</div>
+                  <p className="text-sm">Нажмите кнопку <span className="font-bold text-apple-red">«Поделиться»</span> в нижней панели браузера</p>
+                </div>
+                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/10">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">2</div>
+                  <p className="text-sm">Прокрутите меню вниз и выберите <span className="font-bold text-apple-red">«На экран „Домой“»</span></p>
+                </div>
+                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/10">
+                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">3</div>
+                  <p className="text-sm">Нажмите <span className="font-bold text-apple-red">«Добавить»</span> в правом верхнем углу</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowIOSInstructions(false)}
+                className="w-full py-3 rounded-xl bg-white/10 font-bold hover:bg-white/20 transition-all"
+              >
+                Понятно
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* QR Modal */}
       <AnimatePresence>

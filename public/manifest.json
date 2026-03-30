@@ -1,0 +1,23 @@
+{
+  "name": "CarQR - Умная визитка для авто",
+  "short_name": "CarQR",
+  "description": "Создайте QR-код для вашего автомобиля, чтобы другие водители могли связаться с вами.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#ff3b30",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

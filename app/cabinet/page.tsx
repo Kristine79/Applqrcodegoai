@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { 
   Car, 
   User, 
@@ -28,7 +29,6 @@ export default function CabinetPage() {
   const [selectedCard, setSelectedCard] = useState<CarCardData | null>(null);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const saved = localStorage.getItem(SAVED_CARDS_KEY);
     if (saved && saved.trim() !== '') {
@@ -101,10 +101,10 @@ export default function CabinetPage() {
             </div>
             <div>
               <h2 className="text-label">Ваш профиль</h2>
-              <p className="text-body-sm">Локальное хранилище данных</p>
+              <p className="text-secondary text-sm">Локальное хранилище данных</p>
               <div className="mt-0.5 inline-flex items-center gap-1 px-1.5 py-0.5 bg-apple-red/10 rounded-lg border border-apple-red/20">
                 <span className="w-1 h-1 rounded-full bg-apple-red animate-pulse"></span>
-                <span className="text-caption text-apple-red">Активен</span>
+                <span className="text-[10px] uppercase tracking-wider font-bold text-apple-red">Активен</span>
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function CabinetPage() {
         {/* Stats Grid */}
         <div className="grid grid-cols-1 gap-2.5">
           <div className="glass-panel p-2.5 flex flex-col items-center justify-center gap-0 text-center">
-            <span className="text-2xl font-bold">{savedCards.length}</span>
+            <span className="text-2xl font-black text-primary">{savedCards.length}</span>
             <span className="text-caption">Визиток</span>
           </div>
         </div>
@@ -124,7 +124,7 @@ export default function CabinetPage() {
             onClick={exportCards}
             className="w-full glass-panel p-2.5 flex items-center justify-center gap-2 text-caption hover:bg-white/5 transition-all"
           >
-            <Download className="w-3.5 h-3.5 text-white/20" />
+            <Download className="w-3.5 h-3.5 text-white/40" />
             Сохранить визитку
           </button>
         </div>
@@ -138,12 +138,12 @@ export default function CabinetPage() {
           {savedCards.length === 0 ? (
             <div className="glass-panel p-6 text-center space-y-2.5">
               <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center mx-auto opacity-20">
-                <CreditCard className="w-5 h-5" />
+                <CreditCard className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-body-sm">У вас пока нет сохраненных визиток</p>
+              <p className="text-secondary text-sm">У вас пока нет сохраненных визиток</p>
               <Link 
                 href="/" 
-                className="inline-block px-4 py-1.5 bg-apple-red rounded-xl text-caption hover:scale-105 transition-all"
+                className="inline-block px-4 py-1.5 bg-apple-red rounded-xl text-[11px] uppercase tracking-wider font-bold text-white hover:scale-105 transition-all"
               >
                 Создать первую
               </Link>
@@ -161,14 +161,14 @@ export default function CabinetPage() {
                 >
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-apple-red/30 transition-all">
-                      <Car className="w-3.5 h-3.5 text-gray-400 group-hover:text-apple-red transition-all" />
+                      <Car className="w-3.5 h-3.5 text-white/40 group-hover:text-apple-red transition-all" />
                     </div>
                     <div>
-                      <div className="text-label">{card.carModel}</div>
-                      <div className="text-[10px] text-white/20">{card.plateNumber}</div>
+                      <div className="text-label text-primary">{card.carModel}</div>
+                      <div className="text-[10px] text-tertiary font-medium">{card.plateNumber}</div>
                     </div>
                   </div>
-                  <ChevronRight className="w-3 h-3 text-gray-600 group-hover:text-white transition-all" />
+                  <ChevronRight className="w-3 h-3 text-tertiary group-hover:text-primary transition-all" />
                 </motion.div>
               ))}
             </div>
@@ -233,20 +233,20 @@ export default function CabinetPage() {
                   <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-caption">Автомобиль</span>
-                      <span className="text-label">{selectedCard.carModel}</span>
+                      <span className="text-label text-primary">{selectedCard.carModel}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-caption">Госномер</span>
-                      <span className="text-label">{selectedCard.plateNumber}</span>
+                      <span className="text-label text-primary">{selectedCard.plateNumber}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-caption">Владелец</span>
-                      <span className="text-label">{selectedCard.ownerName}</span>
+                      <span className="text-label text-primary">{selectedCard.ownerName}</span>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-2">
-                    <p className="text-body-sm text-center px-4">
+                    <p className="text-secondary text-sm text-center px-4">
                       Это данные вашей визитки. Люди увидят их при сканировании вашего QR-кода.
                     </p>
                     <Link
@@ -275,7 +275,7 @@ export default function CabinetPage() {
                     </div>
                     <button
                       onClick={() => setSelectedCard(null)}
-                      className="w-full py-3 bg-white/5 text-gray-400 rounded-xl text-sm font-bold hover:bg-white/10 transition-all"
+                      className="w-full py-3 bg-white/5 text-white/60 rounded-xl text-sm font-bold hover:bg-white/10 transition-all"
                     >
                       Закрыть
                     </button>
@@ -287,15 +287,26 @@ export default function CabinetPage() {
         </AnimatePresence>
 
         {/* Footer Info */}
-        <div className="text-center pt-4 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-            <ShieldCheck className="w-6 h-6 text-apple-red" />
-            <span className="text-caption text-white/60">Мы не храним ваши данные на сервере. Все данные кодируются прямо в QR-код.</span>
+        <footer className="mt-12 mb-8 text-center space-y-6 relative z-10 px-4">
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
+              <ShieldCheck className="w-4 h-4 text-apple-red" />
+              <span className="text-[10px] text-tertiary leading-tight max-w-[220px] text-left uppercase tracking-wider font-medium">
+                Данные не хранятся на сервере, а кодируются прямо в QR-код
+              </span>
+            </div>
+            
+            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-widest">
+              <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
+                Политика конфиденциальности
+              </Link>
+              <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
+                Обработка данных
+              </Link>
+            </div>
           </div>
-          <p className="text-caption">
-            Личный кабинет CarQR • Безопасно и конфиденциально
-          </p>
-        </div>
+          <p className="text-caption opacity-50">© 2026 CarQR. Все права защищены.</p>
+        </footer>
       </div>
     </div>
   );
