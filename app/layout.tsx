@@ -33,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/logo.png" />
         <meta name="theme-color" content="#ff3b30" />
+        <meta name="yandex-verification" content="29fe0c0e50aa1608" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
