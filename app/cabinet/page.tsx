@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { QRCodeSVG } from 'qrcode.react';
 import { type CarCardData, encodeCardData } from '@/lib/utils';
 
@@ -29,6 +28,7 @@ export default function CabinetPage() {
   const [selectedCard, setSelectedCard] = useState<CarCardData | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const saved = localStorage.getItem(SAVED_CARDS_KEY);
     if (saved && saved.trim() !== '') {
