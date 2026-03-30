@@ -84,7 +84,15 @@ export default function CabinetPage() {
                 referrerPolicy="no-referrer"
               />
             </div>
-            <span className="heading-section">CarQR</span>
+            <span className="heading-section">
+            Car
+            <motion.span
+              animate={{ color: ['#ffffff', '#ef4444', '#ffffff'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              QR
+            </motion.span>
+          </span>
           </Link>
           <h1 className="heading-card">Личный кабинет</h1>
           <div className="w-8 h-8 rounded-full bg-apple-red/10 flex items-center justify-center border border-apple-red/20">

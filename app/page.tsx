@@ -552,7 +552,15 @@ export default function Home() {
               referrerPolicy="no-referrer"
             />
           </div>
-          <span className="heading-section">CarQR</span>
+          <span className="heading-section">
+            Car
+            <motion.span
+              animate={{ color: ['#ffffff', '#ef4444', '#ffffff'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              QR
+            </motion.span>
+          </span>
         </Link>
         <div className="flex items-center gap-2">
           <Link

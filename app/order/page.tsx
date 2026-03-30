@@ -126,7 +126,15 @@ export default function OrderPage() {
           <div className="w-8 h-8 relative rounded-lg overflow-hidden border border-white/10">
             <Image src="/logo.png" alt="Logo" fill sizes="32px" className="object-cover" />
           </div>
-          <span className="heading-section">CarQR</span>
+          <span className="heading-section">
+            Car
+            <motion.span
+              animate={{ color: ['#ffffff', '#ef4444', '#ffffff'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              QR
+            </motion.span>
+          </span>
         </Link>
         <Link href="/" className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all">
           <ArrowLeft className="w-5 h-5" />
