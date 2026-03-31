@@ -47,11 +47,11 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
 
   const MOCKUP_IMAGES = [
-    { src: 'https://picsum.photos/seed/car-sticker-1/800/600', title: 'Вид спереди', desc: 'Размещение на лобовом стекле' },
-    { src: 'https://picsum.photos/seed/car-sticker-2/800/600', title: 'Вид сбоку', desc: 'Размещение на боковом стекле' },
-    { src: 'https://picsum.photos/seed/car-sticker-3/800/600', title: 'Вид сзади', desc: 'Размещение на заднем стекле' },
-    { src: 'https://images.unsplash.com/photo-1583121274602-3e2820c69888?auto=format&fit=crop&q=80&w=800&h=600', title: 'Mercedes G-class', desc: 'Пример размещения на заднем стекле внедорожника' },
-    { src: 'https://picsum.photos/seed/car-qr-4/800/600', title: 'Стиль и минимализм', desc: 'Вариант для любого типа кузова' },
+    { src: '/images/lob.jpg', title: 'Вид спереди', desc: 'Размещение на лобовом стекле' },
+    { src: '/images/sboku.jpg', title: 'Вид сбоку', desc: 'Размещение на боковом стекле' },
+    { src: '/images/szadi.jpg', title: 'Вид сзади', desc: 'Размещение на заднем стекле' },
+    
+    
   ];
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -1072,25 +1072,30 @@ export default function Home() {
             <button
               type="submit"
               disabled={isGenerating}
-              className={`w-full py-3 px-6 rounded-xl font-bold text-base transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl ${
+              className={`w-full py-4 px-6 rounded-xl font-bold text-lg uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl ${
                 isSuccess 
                   ? 'bg-green-500 text-white' 
-                  : 'red-gradient text-white red-glow hover:brightness-110'
+                  : 'bg-apple-red text-white red-glow hover:brightness-110'
               }`}
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-6 h-6 animate-spin" />
                   Создаем...
                 </>
               ) : isSuccess ? (
                 <>
-                  <Check className="w-5 h-5" />
+                  <Check className="w-6 h-6" />
                   Готово!
                 </>
               ) : (
                 <>
-                  <QrCode className="w-5 h-5" />
+                  <motion.div
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <QrCode className="w-6 h-6" />
+                  </motion.div>
                   Создать QR-код
                 </>
               )}
@@ -1114,8 +1119,8 @@ export default function Home() {
               </span>
             </div>
             
-            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-widest">
-              <a href="mailto:info@premiumwebsite.ru" className="flex items-center gap-1.5 text-secondary hover:text-apple-red transition-colors">
+            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-medium uppercase tracking-wider">
+              <a href="mailto:info@premiumwebsite.ru" className="flex items-center gap-1.5 text-tertiary hover:text-apple-red transition-colors">
                 <Mail className="w-3.5 h-3.5" />
                 Поддержка
               </a>
@@ -1127,7 +1132,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <p className="text-caption opacity-50">© 2026 CarQR. Все права защищены.</p>
+          <p className="text-[10px] text-tertiary uppercase tracking-wider font-medium">© 2026 CarQR. Все права защищены.</p>
         </footer>
       </main>
 
@@ -1227,7 +1232,7 @@ export default function Home() {
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     onClick={downloadQR}
-                    className="py-3 px-2 rounded-2xl red-gradient text-white font-bold flex flex-col items-center justify-center gap-1.5 shadow-xl red-glow hover:brightness-110 transition-all"
+                    className="py-3 px-2 rounded-2xl bg-apple-red text-white font-bold flex flex-col items-center justify-center gap-1.5 shadow-xl red-glow hover:brightness-110 transition-all"
                   >
                     <Download className="w-4 h-4" />
                     <span className="text-caption">Скачать</span>

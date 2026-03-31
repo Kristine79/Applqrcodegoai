@@ -298,7 +298,7 @@ export default function PublicCardView() {
           {card.phone1 && (
             <a 
               href={`tel:${card.phone1}`}
-              className="flex items-center justify-center gap-2 text-white py-4 rounded-[1.25rem] font-bold text-base red-gradient shadow-2xl red-glow hover:brightness-110 transition-all active:scale-95"
+              className="flex items-center justify-center gap-2 text-white py-4 rounded-[1.25rem] font-bold text-base bg-apple-red shadow-2xl red-glow hover:brightness-110 transition-all active:scale-95"
             >
               <Phone className="w-4 h-4" />
               Позвонить
@@ -344,7 +344,7 @@ export default function PublicCardView() {
             </button>
             <button
               onClick={() => {
-                const url = encodeURIComponent('https://autoqrcard.vercel.app/');
+                const url = encodeURIComponent('https://avtovisitka.ru/');
                 window.open(`https://vk.com/share.php?url=${url}`, '_blank');
               }}
               className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all shadow-xl"
@@ -358,10 +358,10 @@ export default function PublicCardView() {
                   navigator.share({
                     title: 'CarQR — Ваш QR-код для связи',
                     text: 'Создайте свой QR-код для автомобиля, чтобы другие могли связаться с вами, если машина мешает.',
-                    url: 'https://autoqrcard.vercel.app/',
+                    url: 'https://avtovisitka.ru/',
                   }).catch(console.error);
                 } else {
-                  navigator.clipboard.writeText('https://autoqrcard.vercel.app/');
+                  navigator.clipboard.writeText('https://avtovisitka.ru/');
                   alert('Ссылка скопирована');
                 }
               }}
@@ -379,7 +379,7 @@ export default function PublicCardView() {
           <p className="text-[10px] font-bold text-gray-500">Закажи qr код бесплатно</p>
           <div className="flex items-center justify-center">
             <a 
-              href="https://carqr-free.vercel.app" 
+              href="https://avtovisitka.ru/" 
               className="group flex flex-col items-center gap-1"
             >
               <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-apple-red/20 group-hover:border-apple-red/30 transition-all">
@@ -432,7 +432,7 @@ export default function PublicCardView() {
               <div className="w-full max-w-sm space-y-4">
                 <button
                   onClick={downloadQR}
-                  className="w-full py-5 px-8 rounded-3xl red-gradient text-white font-bold flex items-center justify-center gap-3 shadow-xl red-glow hover:brightness-110 transition-all"
+                  className="w-full py-5 px-8 rounded-3xl bg-apple-red text-white font-bold flex items-center justify-center gap-3 shadow-xl red-glow hover:brightness-110 transition-all"
                 >
                   <Download className="w-6 h-6" />
                   Скачать PNG

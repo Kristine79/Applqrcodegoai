@@ -5,6 +5,17 @@
   --color-glass-border: var(--glass-border);
   --color-apple-red: #ff3b30;
   --color-apple-red-dark: #8b0000;
+  
+  --animate-gradient-x: gradient-x 3s ease infinite;
+
+  @keyframes gradient-x {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
 }
 
 :root {
@@ -107,7 +118,7 @@
   }
 
   .red-gradient {
-    background: linear-gradient(135deg, #ff3b30 0%, #8b0000 100%);
+    background: linear-gradient(-45deg, #ff3b30, #8b0000, #ff3b30, #8b0000);
   }
 
   .scrollbar-hide::-webkit-scrollbar {

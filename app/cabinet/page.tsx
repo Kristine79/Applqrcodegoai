@@ -304,7 +304,7 @@ export default function CabinetPage() {
               </span>
             </div>
             
-            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-widest">
+            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-medium uppercase tracking-wider">
               <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
                 Политика конфиденциальности
               </Link>
@@ -313,7 +313,7 @@ export default function CabinetPage() {
               </Link>
             </div>
           </div>
-          <p className="text-caption opacity-50">© 2026 CarQR. Все права защищены.</p>
+          <p className="text-[10px] text-tertiary uppercase tracking-wider font-medium">© 2026 CarQR. Все права защищены.</p>
         </footer>
       </div>
     </div>

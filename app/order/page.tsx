@@ -379,8 +379,8 @@ export default function OrderPage() {
               </span>
             </div>
             
-            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-bold uppercase tracking-widest">
-              <a href="mailto:info@premiumwebsite.ru" className="flex items-center gap-1.5 text-secondary hover:text-apple-red transition-colors">
+            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-medium uppercase tracking-wider">
+              <a href="mailto:info@premiumwebsite.ru" className="flex items-center gap-1.5 text-tertiary hover:text-apple-red transition-colors">
                 <Mail className="w-3.5 h-3.5" />
                 Поддержка
               </a>
@@ -392,7 +392,7 @@ export default function OrderPage() {
               </Link>
             </div>
           </div>
-          <p className="text-caption opacity-50">© 2026 CarQR. Все права защищены.</p>
+          <p className="text-[10px] text-tertiary uppercase tracking-wider font-medium">© 2026 CarQR. Все права защищены.</p>
         </footer>
       </main>
     </div>

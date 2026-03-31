@@ -78,7 +78,7 @@ class ErrorBoundary extends Component<Props, State> {
               </button>
               <button
                 onClick={() => window.location.href = '/'}
-                className="flex-1 flex items-center justify-center gap-2 red-gradient text-white py-4 px-6 rounded-2xl heading-card shadow-lg hover:brightness-110 transition-all active:scale-95"
+                className="flex-1 flex items-center justify-center gap-2 bg-apple-red text-white py-4 px-6 rounded-2xl heading-card shadow-lg hover:brightness-110 transition-all active:scale-95"
               >
                 На главную
               </button>

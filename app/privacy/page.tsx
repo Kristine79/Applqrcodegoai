@@ -111,7 +111,7 @@ export default function PrivacyPage() {
               </span>
             </div>
           </div>
-          <p className="text-caption opacity-50">© 2026 CarQR. Все права защищены.</p>
+          <p className="text-[10px] text-tertiary uppercase tracking-wider font-medium">© 2026 CarQR. Все права защищены.</p>
         </footer>
       </div>
     </div>
