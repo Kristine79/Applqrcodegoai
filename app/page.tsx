@@ -1366,7 +1366,7 @@ export default function Home() {
                           <Type className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-tertiary" />
                           <input
                             name="qrText"
-                            maxLength={20}
+                            maxLength={35}
                             value={formData.qrText || ''}
                             onChange={handleInputChange}
                             placeholder="Сканируй меня!"
