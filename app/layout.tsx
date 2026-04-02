@@ -21,13 +21,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'CarQR',
     description: 'QR-визитка для вашего автомобиля',
-    images: [{ url: '/logo.png?v=4' }],
+    images: [{ url: '/logo.png' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'CarQR',
     description: 'QR-визитка для вашего автомобиля',
-    images: ['/logo.png?v=4'],
+    images: ['/logo.png'],
   },
 };
 
@@ -37,9 +37,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <script src="https://telegram.org/js/telegram-web-app.js" async></script>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/logo.png?v=4" />
+        <link rel="apple-touch-icon" href="/logo.png" />
         <meta name="theme-color" content="#ff3b30" />
-        <meta name="yandex-verification" content="29fe0c0e50aa1608" />
+        <meta name="yandex-verification" content="bb7d85143dfd2c41" />
         <script
           dangerouslySetInnerHTML={{
             __html: `

@@ -124,7 +124,7 @@ export default function OrderPage() {
       <header className="glass-panel sticky top-0 z-50 mx-2 mt-2 px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 relative rounded-lg overflow-hidden border border-white/10">
-            <Image src="/logo.png?v=4" alt="Logo" fill sizes="32px" className="object-cover" unoptimized />
+            <Image src="/logo.png" alt="Logo" fill sizes="32px" className="object-cover" unoptimized />
           </div>
           <span className="heading-section">
             Car

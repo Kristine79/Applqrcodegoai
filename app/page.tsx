@@ -854,7 +854,7 @@ export default function Home() {
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-[46px] h-[46px] relative rounded-lg overflow-hidden shadow-lg border border-white/10">
             <Image 
-              src="/logo.png?v=4" 
+              src="/logo.png" 
               alt="CarQR Logo" 
               fill 
               sizes="46px"
@@ -1454,6 +1454,10 @@ export default function Home() {
             </div>
             
             <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-medium uppercase tracking-wider">
+              <a href="https://t.me/usefulbots2026_bot" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-tertiary hover:text-apple-red transition-colors">
+                <Send className="w-3.5 h-3.5" />
+                Полезные боты в Telegram
+              </a>
               <a href="mailto:info@premiumwebsite.ru" className="flex items-center gap-1.5 text-tertiary hover:text-apple-red transition-colors">
                 <Mail className="w-3.5 h-3.5" />
                 Поддержка
@@ -1564,7 +1568,7 @@ export default function Home() {
                       includeMargin={true}
                       fgColor={formData.themeColor}
                       imageSettings={{
-                        src: "/logo.png?v=4",
+                        src: "/logo.png",
                         x: undefined,
                         y: undefined,
                         height: 40,

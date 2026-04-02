@@ -2,7 +2,7 @@ const CACHE_NAME = 'carqr-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
-  '/logo.png?v=4',
+  '/logo.png',
 ];
 
 self.addEventListener('install', (event) => {

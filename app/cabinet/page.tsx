@@ -76,7 +76,7 @@ export default function CabinetPage() {
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 relative rounded-lg overflow-hidden border border-white/10 shadow-lg">
               <Image 
-                src="/logo.png?v=4" 
+                src="/logo.png" 
                 alt="Logo" 
                 fill 
                 sizes="32px"

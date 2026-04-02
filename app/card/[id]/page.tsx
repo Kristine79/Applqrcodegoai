@@ -160,7 +160,7 @@ export default function PublicCardView() {
               </Link>
               <Link href="/" className="w-9 h-9 relative rounded-xl overflow-hidden border border-white/10 shadow-xl hover:opacity-80 transition-opacity">
                 <Image 
-                  src="/logo.png?v=4" 
+                  src="/logo.png" 
                   alt="Logo" 
                   fill 
                   sizes="36px"
