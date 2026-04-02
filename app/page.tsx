@@ -58,9 +58,9 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
 
   const MOCKUP_IMAGES = [
-    { src: '/images/lob.jpg?v=4', title: 'Вид спереди', desc: 'Размещение на лобовом стекле' },
-    { src: '/images/sboku.jpg?v=4', title: 'Вид сбоку', desc: 'Размещение на боковом стекле' },
-    { src: '/images/szadi.jpg?v=4', title: 'Вид сзади', desc: 'Размещение на заднем стекле' },
+    { src: '/images/lob.jpg', title: 'Вид спереди', desc: 'Размещение на лобовом стекле' },
+    { src: '/images/sboku.jpg', title: 'Вид сбоку', desc: 'Размещение на боковом стекле' },
+    { src: '/images/szadi.jpg', title: 'Вид сзади', desc: 'Размещение на заднем стекле' },
   ];
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -87,10 +87,24 @@ export default function Home() {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
+  const [logoBase64, setLogoBase64] = useState<string>('');
+
   // Load draft, statistics and theme
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+
+    // Load logo as base64 for QR code embedding
+    fetch('/logo.png')
+      .then(res => res.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setLogoBase64(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(err => console.error('Error loading logo for QR:', err));
     
     const draft = localStorage.getItem(STORAGE_KEY);
     if (draft && draft.trim() !== '') {
@@ -391,11 +405,39 @@ export default function Home() {
 
     const scale = 4;
     const qrSize = 240 * scale;
-    const padding = 10 * scale;
-    const framePadding = 20 * scale;
-    const fontSize = 16 * scale;
-    const lineHeight = 20 * scale;
+    const padding = 16 * scale; // Matches p-4 in JSX
+    const framePadding = 24 * scale; // Matches p-6 in JSX
+    const fontSize = 14 * scale;
+    const lineHeight = 18 * scale;
     const maxWidth = qrSize - (padding * 2);
+
+    // Helper for rounded rectangles to ensure compatibility
+    const drawRoundedRect = (x: number, y: number, width: number, height: number, radius: number | number[]) => {
+      ctx.beginPath();
+      if (Array.isArray(radius)) {
+        const [tl, tr, br, bl] = radius;
+        ctx.moveTo(x + tl, y);
+        ctx.lineTo(x + width - tr, y);
+        ctx.arcTo(x + width, y, x + width, y + tr, tr);
+        ctx.lineTo(x + width, y + height - br);
+        ctx.arcTo(x + width, y + height, x + width - br, y + height, br);
+        ctx.lineTo(x + bl, y + height);
+        ctx.arcTo(x, y + height, x, y + height - bl, bl);
+        ctx.lineTo(x, y + tl);
+        ctx.arcTo(x, y, x + tl, y, tl);
+      } else {
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.arcTo(x + width, y, x + width, y + radius, radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+        ctx.lineTo(x + radius, y + height);
+        ctx.arcTo(x, y + height, x, y + height - radius, radius);
+        ctx.lineTo(x, y + radius);
+        ctx.arcTo(x, y, x + radius, y, radius);
+      }
+      ctx.closePath();
+    };
 
     ctx.font = `bold ${fontSize}px sans-serif`;
     
@@ -421,20 +463,25 @@ export default function Home() {
 
     const footerText = "Твоя цифровая авто визитка avtovisitka.ru";
     const footerFontSize = 10 * scale;
-    const footerPadding = 15 * scale;
+    const footerPadding = 20 * scale;
 
-    const labelHeight = lines.length > 0 ? (lines.length * lineHeight) + padding : 0;
+    const labelHeight = lines.length > 0 ? (lines.length * lineHeight) + (padding * 2) : 0;
     const totalFooterHeight = footerFontSize + footerPadding;
     
     // Adjust canvas size based on frame
-    let canvasWidth = qrSize + (framePadding * 2);
-    let canvasHeight = qrSize + labelHeight + totalFooterHeight + (framePadding * 2);
+    let canvasWidth = qrSize + (framePadding * 2) + (padding * 2);
+    let canvasHeight = qrSize + (framePadding * 2) + (padding * 2) + labelHeight + totalFooterHeight;
 
     if (formData.selectedFrame === 'circle') {
-      canvasWidth = qrSize + (framePadding * 4);
+      const circlePadding = 40 * scale; // Matches p-10 in JSX
+      canvasWidth = qrSize + (padding * 2) + (circlePadding * 2);
       canvasHeight = canvasWidth + totalFooterHeight;
     } else if (formData.selectedFrame === 'bubble') {
       canvasHeight += 20 * scale; // Extra for pointer
+    } else if (formData.selectedFrame === 'double_border') {
+      const doublePadding = 32 * scale; // Matches p-8 in JSX
+      canvasWidth = qrSize + (padding * 2) + (doublePadding * 2);
+      canvasHeight = canvasWidth + labelHeight + totalFooterHeight;
     }
     
     canvas.width = canvasWidth;
@@ -447,60 +494,64 @@ export default function Home() {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw Frame
-      const frameX = framePadding;
-      const frameY = framePadding;
-      const frameWidth = canvas.width - (framePadding * 2);
-      const frameHeight = canvas.height - totalFooterHeight - (framePadding * 2);
-      const r = 20 * scale;
+      const frameX = 0;
+      const frameY = 0;
+      const frameWidth = canvas.width;
+      const frameHeight = canvas.height - totalFooterHeight;
+      const r = 48 * scale; // Matches rounded-[3rem]
 
       ctx.save();
-      if (formData.selectedFrame === 'label_bottom') {
+      if (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') {
+        const mainRectHeight = formData.selectedFrame === 'bubble' ? frameHeight - 20 * scale : frameHeight;
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        drawRoundedRect(frameX + 2 * scale, frameY + 2 * scale, frameWidth - 4 * scale, mainRectHeight - 2 * scale, r);
         ctx.fill();
         ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 * scale;
+        ctx.lineWidth = 3 * scale;
         ctx.stroke();
         
+        if (formData.selectedFrame === 'bubble') {
+          // Pointer
+          ctx.beginPath();
+          ctx.moveTo(canvas.width / 2 - 15 * scale, frameY + mainRectHeight - 2 * scale);
+          ctx.lineTo(canvas.width / 2, frameY + frameHeight - 2 * scale);
+          ctx.lineTo(canvas.width / 2 + 15 * scale, frameY + mainRectHeight - 2 * scale);
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+          ctx.strokeStyle = '#000000';
+          ctx.stroke();
+          
+          // Hide the line between rect and pointer
+          ctx.beginPath();
+          ctx.moveTo(canvas.width / 2 - 14 * scale, frameY + mainRectHeight - 3 * scale);
+          ctx.lineTo(canvas.width / 2 + 14 * scale, frameY + mainRectHeight - 3 * scale);
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 4 * scale;
+          ctx.stroke();
+        }
+
         // Label box
         if (lines.length > 0) {
           ctx.fillStyle = '#000000';
-          const boxY = frameY + frameHeight - labelHeight;
-          ctx.beginPath();
-          ctx.roundRect(frameX + 10 * scale, boxY, frameWidth - 20 * scale, labelHeight - 10 * scale, 10 * scale);
+          const boxPadding = 8 * scale;
+          const boxWidth = qrSize + (padding * 2);
+          const boxX = (canvas.width - boxWidth) / 2;
+          const boxY = frameY + mainRectHeight - labelHeight - 10 * scale;
+          drawRoundedRect(boxX, boxY, boxWidth, labelHeight, 16 * scale);
           ctx.fill();
         }
       } else if (formData.selectedFrame === 'solid_black') {
         ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        drawRoundedRect(frameX, frameY, frameWidth, frameHeight, r);
         ctx.fill();
-      } else if (formData.selectedFrame === 'bubble') {
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight - 20 * scale, r);
-        ctx.fill();
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 * scale;
-        ctx.stroke();
         
-        // Pointer
-        ctx.beginPath();
-        ctx.moveTo(canvas.width / 2 - 15 * scale, frameY + frameHeight - 20 * scale);
-        ctx.lineTo(canvas.width / 2, frameY + frameHeight);
-        ctx.lineTo(canvas.width / 2 + 15 * scale, frameY + frameHeight - 20 * scale);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-        ctx.strokeStyle = '#000000';
-        ctx.stroke();
-        
-        // Label box
+        // Label box (subtle accent)
         if (lines.length > 0) {
-          ctx.fillStyle = '#000000';
-          const boxY = frameY + frameHeight - labelHeight - 20 * scale;
-          ctx.beginPath();
-          ctx.roundRect(frameX + 20 * scale, boxY, frameWidth - 40 * scale, labelHeight - 10 * scale, 10 * scale);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          const boxWidth = qrSize + (padding * 2);
+          const boxX = (canvas.width - boxWidth) / 2;
+          const boxY = frameY + frameHeight - labelHeight - 10 * scale;
+          drawRoundedRect(boxX, boxY, boxWidth, labelHeight, 16 * scale);
           ctx.fill();
         }
       } else if (formData.selectedFrame === 'circle') {
@@ -508,75 +559,97 @@ export default function Home() {
         ctx.beginPath();
         ctx.arc(canvas.width / 2, (canvas.height - totalFooterHeight) / 2, frameWidth / 2, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Label box (subtle accent)
+        if (lines.length > 0) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          const boxWidth = qrSize * 0.8;
+          const boxX = (canvas.width - boxWidth) / 2;
+          const boxY = (canvas.height - totalFooterHeight) * 0.85 - labelHeight;
+          drawRoundedRect(boxX, boxY, boxWidth, labelHeight, 16 * scale);
+          ctx.fill();
+        }
       } else if (formData.selectedFrame === 'rounded_accent') {
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.moveTo(frameX + r, frameY);
-        ctx.lineTo(frameX + frameWidth, frameY); // Sharp top-right
-        ctx.lineTo(frameX + frameWidth, frameY + frameHeight - r);
-        ctx.arcTo(frameX + frameWidth, frameY + frameHeight, frameX + frameWidth - r, frameY + frameHeight, r);
-        ctx.lineTo(frameX + r, frameY + frameHeight);
-        ctx.arcTo(frameX, frameY + frameHeight, frameX, frameY + frameHeight - r, r);
-        ctx.lineTo(frameX, frameY + r);
-        ctx.arcTo(frameX, frameY, frameX + r, frameY, r);
+        drawRoundedRect(frameX + 2 * scale, frameY + 2 * scale, frameWidth - 4 * scale, frameHeight - 4 * scale, [r, 0, r, r]);
         ctx.fill();
         ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 * scale;
+        ctx.lineWidth = 3 * scale;
         ctx.stroke();
       } else if (formData.selectedFrame === 'double_border') {
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        drawRoundedRect(frameX + 2 * scale, frameY + 2 * scale, frameWidth - 4 * scale, frameHeight - 4 * scale, r);
         ctx.fill();
         ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 * scale;
+        ctx.lineWidth = 3 * scale;
         ctx.stroke();
         
-        ctx.beginPath();
-        ctx.roundRect(frameX + 6 * scale, frameY + 6 * scale, frameWidth - 12 * scale, frameHeight - 12 * scale, r - 6 * scale);
+        const innerOffset = 8 * scale;
+        drawRoundedRect(frameX + innerOffset, frameY + innerOffset, frameWidth - innerOffset * 2, frameHeight - innerOffset * 2, r - innerOffset);
         ctx.stroke();
       } else {
         // none
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        drawRoundedRect(frameX, frameY, frameWidth, frameHeight, r);
         ctx.fill();
       }
       ctx.restore();
 
+      // Draw QR Background (White box)
+      const qrBoxSize = qrSize + (padding * 2);
+      const qrBoxX = (canvas.width - qrBoxSize) / 2;
+      const qrBoxY = framePadding;
+      
+      ctx.fillStyle = '#ffffff';
+      drawRoundedRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 32 * scale); // Matches rounded-[2rem]
+      ctx.fill();
+      
+      // Shadow for QR box (simplified)
+      ctx.shadowColor = 'rgba(0,0,0,0.1)';
+      ctx.shadowBlur = 10 * scale;
+      ctx.shadowOffsetY = 5 * scale;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      
       // Draw QR
-      const qrX = (canvas.width - qrSize) / 2;
-      const qrY = frameY + 15 * scale;
-      
-      if (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') {
-        // Draw a white background for the QR code if the frame is black
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(qrX - 5 * scale, qrY - 5 * scale, qrSize + 10 * scale, qrSize + 10 * scale, 10 * scale);
-        ctx.fill();
-      }
-      
-      ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+      ctx.drawImage(img, qrBoxX + padding, qrBoxY + padding, qrSize, qrSize);
       
       if (lines.length > 0) {
         ctx.font = `bold ${fontSize}px sans-serif`;
         ctx.textAlign = 'center';
         
+        const boxWidth = qrSize + (padding * 2);
+        const boxX = (canvas.width - boxWidth) / 2;
+        
         if (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') {
           ctx.fillStyle = 'white';
-          const textY = frameY + frameHeight - (formData.selectedFrame === 'bubble' ? 20 * scale : 0) - (labelHeight / 2) + (fontSize / 2);
+          const mainRectHeight = formData.selectedFrame === 'bubble' ? frameHeight - 20 * scale : frameHeight;
+          const boxY = frameY + mainRectHeight - labelHeight - 10 * scale;
+          const textY = boxY + (labelHeight / 2) - ((lines.length - 1) * lineHeight / 2) + (fontSize / 3);
           lines.forEach((line, i) => {
             ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
           });
-        } else if (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') {
+        } else if (formData.selectedFrame === 'solid_black') {
           ctx.fillStyle = 'white';
+          const boxY = frameY + frameHeight - labelHeight - 10 * scale;
+          const textY = boxY + (labelHeight / 2) - ((lines.length - 1) * lineHeight / 2) + (fontSize / 3);
           lines.forEach((line, i) => {
-            ctx.fillText(line.trim(), canvas.width / 2, qrY + qrSize + 25 * scale + (i * lineHeight));
+            ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
+          });
+        } else if (formData.selectedFrame === 'circle') {
+          ctx.fillStyle = 'white';
+          const boxWidthCircle = qrSize * 0.8;
+          const boxY = (canvas.height - totalFooterHeight) * 0.85 - labelHeight;
+          const textY = boxY + (labelHeight / 2) - ((lines.length - 1) * lineHeight / 2) + (fontSize / 3);
+          lines.forEach((line, i) => {
+            ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
           });
         } else {
           ctx.fillStyle = 'black';
+          const textY = qrBoxY + qrBoxSize + 25 * scale;
           lines.forEach((line, i) => {
-            ctx.fillText(line.trim(), canvas.width / 2, qrY + qrSize + 25 * scale + (i * lineHeight));
+            ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
           });
         }
       }
@@ -625,11 +698,39 @@ export default function Home() {
 
     const scale = 4;
     const qrSize = 240 * scale;
-    const padding = 10 * scale;
-    const framePadding = 20 * scale;
-    const fontSize = 16 * scale;
-    const lineHeight = 20 * scale;
+    const padding = 16 * scale; // Matches p-4 in JSX
+    const framePadding = 24 * scale; // Matches p-6 in JSX
+    const fontSize = 14 * scale;
+    const lineHeight = 18 * scale;
     const maxWidth = qrSize - (padding * 2);
+
+    // Helper for rounded rectangles to ensure compatibility
+    const drawRoundedRect = (x: number, y: number, width: number, height: number, radius: number | number[]) => {
+      ctx.beginPath();
+      if (Array.isArray(radius)) {
+        const [tl, tr, br, bl] = radius;
+        ctx.moveTo(x + tl, y);
+        ctx.lineTo(x + width - tr, y);
+        ctx.arcTo(x + width, y, x + width, y + tr, tr);
+        ctx.lineTo(x + width, y + height - br);
+        ctx.arcTo(x + width, y + height, x + width - br, y + height, br);
+        ctx.lineTo(x + bl, y + height);
+        ctx.arcTo(x, y + height, x, y + height - bl, bl);
+        ctx.lineTo(x, y + tl);
+        ctx.arcTo(x, y, x + tl, y, tl);
+      } else {
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.arcTo(x + width, y, x + width, y + radius, radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.arcTo(x + width, y + height, x + width - radius, y + height, radius);
+        ctx.lineTo(x + radius, y + height);
+        ctx.arcTo(x, y + height, x, y + height - radius, radius);
+        ctx.lineTo(x, y + radius);
+        ctx.arcTo(x, y, x + radius, y, radius);
+      }
+      ctx.closePath();
+    };
 
     ctx.font = `bold ${fontSize}px sans-serif`;
     
@@ -655,20 +756,25 @@ export default function Home() {
 
     const footerText = "Твоя цифровая авто визитка avtovisitka.ru";
     const footerFontSize = 10 * scale;
-    const footerPadding = 15 * scale;
+    const footerPadding = 20 * scale;
 
-    const labelHeight = lines.length > 0 ? (lines.length * lineHeight) + padding : 0;
+    const labelHeight = lines.length > 0 ? (lines.length * lineHeight) + (padding * 2) : 0;
     const totalFooterHeight = footerFontSize + footerPadding;
     
     // Adjust canvas size based on frame
-    let canvasWidth = qrSize + (framePadding * 2);
-    let canvasHeight = qrSize + labelHeight + totalFooterHeight + (framePadding * 2);
+    let canvasWidth = qrSize + (framePadding * 2) + (padding * 2);
+    let canvasHeight = qrSize + (framePadding * 2) + (padding * 2) + labelHeight + totalFooterHeight;
 
     if (formData.selectedFrame === 'circle') {
-      canvasWidth = qrSize + (framePadding * 4);
+      const circlePadding = 40 * scale; // Matches p-10 in JSX
+      canvasWidth = qrSize + (padding * 2) + (circlePadding * 2);
       canvasHeight = canvasWidth + totalFooterHeight;
     } else if (formData.selectedFrame === 'bubble') {
       canvasHeight += 20 * scale; // Extra for pointer
+    } else if (formData.selectedFrame === 'double_border') {
+      const doublePadding = 32 * scale; // Matches p-8 in JSX
+      canvasWidth = qrSize + (padding * 2) + (doublePadding * 2);
+      canvasHeight = canvasWidth + labelHeight + totalFooterHeight;
     }
     
     canvas.width = canvasWidth;
@@ -681,60 +787,64 @@ export default function Home() {
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw Frame
-      const frameX = framePadding;
-      const frameY = framePadding;
-      const frameWidth = canvas.width - (framePadding * 2);
-      const frameHeight = canvas.height - totalFooterHeight - (framePadding * 2);
-      const r = 20 * scale;
+      const frameX = 0;
+      const frameY = 0;
+      const frameWidth = canvas.width;
+      const frameHeight = canvas.height - totalFooterHeight;
+      const r = 48 * scale; // Matches rounded-[3rem]
 
       ctx.save();
-      if (formData.selectedFrame === 'label_bottom') {
+      if (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') {
+        const mainRectHeight = formData.selectedFrame === 'bubble' ? frameHeight - 20 * scale : frameHeight;
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        drawRoundedRect(frameX + 2 * scale, frameY + 2 * scale, frameWidth - 4 * scale, mainRectHeight - 2 * scale, r);
         ctx.fill();
         ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 * scale;
+        ctx.lineWidth = 3 * scale;
         ctx.stroke();
         
+        if (formData.selectedFrame === 'bubble') {
+          // Pointer
+          ctx.beginPath();
+          ctx.moveTo(canvas.width / 2 - 15 * scale, frameY + mainRectHeight - 2 * scale);
+          ctx.lineTo(canvas.width / 2, frameY + frameHeight - 2 * scale);
+          ctx.lineTo(canvas.width / 2 + 15 * scale, frameY + mainRectHeight - 2 * scale);
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+          ctx.strokeStyle = '#000000';
+          ctx.stroke();
+          
+          // Hide the line between rect and pointer
+          ctx.beginPath();
+          ctx.moveTo(canvas.width / 2 - 14 * scale, frameY + mainRectHeight - 3 * scale);
+          ctx.lineTo(canvas.width / 2 + 14 * scale, frameY + mainRectHeight - 3 * scale);
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 4 * scale;
+          ctx.stroke();
+        }
+
         // Label box
         if (lines.length > 0) {
           ctx.fillStyle = '#000000';
-          const boxY = frameY + frameHeight - labelHeight;
-          ctx.beginPath();
-          ctx.roundRect(frameX + 10 * scale, boxY, frameWidth - 20 * scale, labelHeight - 10 * scale, 10 * scale);
+          const boxPadding = 8 * scale;
+          const boxWidth = qrSize + (padding * 2);
+          const boxX = (canvas.width - boxWidth) / 2;
+          const boxY = frameY + mainRectHeight - labelHeight - 10 * scale;
+          drawRoundedRect(boxX, boxY, boxWidth, labelHeight, 16 * scale);
           ctx.fill();
         }
       } else if (formData.selectedFrame === 'solid_black') {
         ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        drawRoundedRect(frameX, frameY, frameWidth, frameHeight, r);
         ctx.fill();
-      } else if (formData.selectedFrame === 'bubble') {
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight - 20 * scale, r);
-        ctx.fill();
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 * scale;
-        ctx.stroke();
         
-        // Pointer
-        ctx.beginPath();
-        ctx.moveTo(canvas.width / 2 - 15 * scale, frameY + frameHeight - 20 * scale);
-        ctx.lineTo(canvas.width / 2, frameY + frameHeight);
-        ctx.lineTo(canvas.width / 2 + 15 * scale, frameY + frameHeight - 20 * scale);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
-        ctx.strokeStyle = '#000000';
-        ctx.stroke();
-        
-        // Label box
+        // Label box (subtle accent)
         if (lines.length > 0) {
-          ctx.fillStyle = '#000000';
-          const boxY = frameY + frameHeight - labelHeight - 20 * scale;
-          ctx.beginPath();
-          ctx.roundRect(frameX + 20 * scale, boxY, frameWidth - 40 * scale, labelHeight - 10 * scale, 10 * scale);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          const boxWidth = qrSize + (padding * 2);
+          const boxX = (canvas.width - boxWidth) / 2;
+          const boxY = frameY + frameHeight - labelHeight - 10 * scale;
+          drawRoundedRect(boxX, boxY, boxWidth, labelHeight, 16 * scale);
           ctx.fill();
         }
       } else if (formData.selectedFrame === 'circle') {
@@ -742,75 +852,97 @@ export default function Home() {
         ctx.beginPath();
         ctx.arc(canvas.width / 2, (canvas.height - totalFooterHeight) / 2, frameWidth / 2, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Label box (subtle accent)
+        if (lines.length > 0) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+          const boxWidth = qrSize * 0.8;
+          const boxX = (canvas.width - boxWidth) / 2;
+          const boxY = (canvas.height - totalFooterHeight) * 0.85 - labelHeight;
+          drawRoundedRect(boxX, boxY, boxWidth, labelHeight, 16 * scale);
+          ctx.fill();
+        }
       } else if (formData.selectedFrame === 'rounded_accent') {
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.moveTo(frameX + r, frameY);
-        ctx.lineTo(frameX + frameWidth, frameY); // Sharp top-right
-        ctx.lineTo(frameX + frameWidth, frameY + frameHeight - r);
-        ctx.arcTo(frameX + frameWidth, frameY + frameHeight, frameX + frameWidth - r, frameY + frameHeight, r);
-        ctx.lineTo(frameX + r, frameY + frameHeight);
-        ctx.arcTo(frameX, frameY + frameHeight, frameX, frameY + frameHeight - r, r);
-        ctx.lineTo(frameX, frameY + r);
-        ctx.arcTo(frameX, frameY, frameX + r, frameY, r);
+        drawRoundedRect(frameX + 2 * scale, frameY + 2 * scale, frameWidth - 4 * scale, frameHeight - 4 * scale, [r, 0, r, r]);
         ctx.fill();
         ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 * scale;
+        ctx.lineWidth = 3 * scale;
         ctx.stroke();
       } else if (formData.selectedFrame === 'double_border') {
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        drawRoundedRect(frameX + 2 * scale, frameY + 2 * scale, frameWidth - 4 * scale, frameHeight - 4 * scale, r);
         ctx.fill();
         ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 2 * scale;
+        ctx.lineWidth = 3 * scale;
         ctx.stroke();
         
-        ctx.beginPath();
-        ctx.roundRect(frameX + 6 * scale, frameY + 6 * scale, frameWidth - 12 * scale, frameHeight - 12 * scale, r - 6 * scale);
+        const innerOffset = 8 * scale;
+        drawRoundedRect(frameX + innerOffset, frameY + innerOffset, frameWidth - innerOffset * 2, frameHeight - innerOffset * 2, r - innerOffset);
         ctx.stroke();
       } else {
         // none
         ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        drawRoundedRect(frameX, frameY, frameWidth, frameHeight, r);
         ctx.fill();
       }
       ctx.restore();
 
+      // Draw QR Background (White box)
+      const qrBoxSize = qrSize + (padding * 2);
+      const qrBoxX = (canvas.width - qrBoxSize) / 2;
+      const qrBoxY = framePadding;
+      
+      ctx.fillStyle = '#ffffff';
+      drawRoundedRect(qrBoxX, qrBoxY, qrBoxSize, qrBoxSize, 32 * scale); // Matches rounded-[2rem]
+      ctx.fill();
+      
+      // Shadow for QR box (simplified)
+      ctx.shadowColor = 'rgba(0,0,0,0.1)';
+      ctx.shadowBlur = 10 * scale;
+      ctx.shadowOffsetY = 5 * scale;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+      
       // Draw QR
-      const qrX = (canvas.width - qrSize) / 2;
-      const qrY = frameY + 15 * scale;
-      
-      if (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') {
-        // Draw a white background for the QR code if the frame is black
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.roundRect(qrX - 5 * scale, qrY - 5 * scale, qrSize + 10 * scale, qrSize + 10 * scale, 10 * scale);
-        ctx.fill();
-      }
-      
-      ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+      ctx.drawImage(img, qrBoxX + padding, qrBoxY + padding, qrSize, qrSize);
       
       if (lines.length > 0) {
         ctx.font = `bold ${fontSize}px sans-serif`;
         ctx.textAlign = 'center';
         
+        const boxWidth = qrSize + (padding * 2);
+        const boxX = (canvas.width - boxWidth) / 2;
+        
         if (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') {
           ctx.fillStyle = 'white';
-          const textY = frameY + frameHeight - (formData.selectedFrame === 'bubble' ? 20 * scale : 0) - (labelHeight / 2) + (fontSize / 2);
+          const mainRectHeight = formData.selectedFrame === 'bubble' ? frameHeight - 20 * scale : frameHeight;
+          const boxY = frameY + mainRectHeight - labelHeight - 10 * scale;
+          const textY = boxY + (labelHeight / 2) - ((lines.length - 1) * lineHeight / 2) + (fontSize / 3);
           lines.forEach((line, i) => {
             ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
           });
-        } else if (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') {
+        } else if (formData.selectedFrame === 'solid_black') {
           ctx.fillStyle = 'white';
+          const boxY = frameY + frameHeight - labelHeight - 10 * scale;
+          const textY = boxY + (labelHeight / 2) - ((lines.length - 1) * lineHeight / 2) + (fontSize / 3);
           lines.forEach((line, i) => {
-            ctx.fillText(line.trim(), canvas.width / 2, qrY + qrSize + 25 * scale + (i * lineHeight));
+            ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
+          });
+        } else if (formData.selectedFrame === 'circle') {
+          ctx.fillStyle = 'white';
+          const boxWidthCircle = qrSize * 0.8;
+          const boxY = (canvas.height - totalFooterHeight) * 0.85 - labelHeight;
+          const textY = boxY + (labelHeight / 2) - ((lines.length - 1) * lineHeight / 2) + (fontSize / 3);
+          lines.forEach((line, i) => {
+            ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
           });
         } else {
           ctx.fillStyle = 'black';
+          const textY = qrBoxY + qrBoxSize + 25 * scale;
           lines.forEach((line, i) => {
-            ctx.fillText(line.trim(), canvas.width / 2, qrY + qrSize + 25 * scale + (i * lineHeight));
+            ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
           });
         }
       }
@@ -859,8 +991,6 @@ export default function Home() {
               fill 
               sizes="46px"
               className="object-cover"
-              referrerPolicy="no-referrer"
-              unoptimized
             />
           </div>
           <span className="heading-section flex items-center">
@@ -1550,16 +1680,16 @@ export default function Home() {
                 <div className="absolute -inset-4 red-gradient rounded-[3rem] blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
                 
                 {/* Frame Preview Wrapper */}
-                <div className={`relative p-8 transition-all duration-300 flex flex-col items-center ${
-                  formData.selectedFrame === 'solid_black' ? 'bg-black rounded-[2.5rem]' :
-                  formData.selectedFrame === 'circle' ? 'bg-black rounded-full p-12' :
-                  formData.selectedFrame === 'label_bottom' ? 'bg-white rounded-[2.5rem] border-2 border-black' :
-                  formData.selectedFrame === 'bubble' ? 'bg-white rounded-[2.5rem] border-2 border-black mb-6' :
-                  formData.selectedFrame === 'rounded_accent' ? 'bg-white rounded-bl-[2.5rem] rounded-br-[2.5rem] rounded-tl-[2.5rem] border-2 border-black' :
-                  formData.selectedFrame === 'double_border' ? 'bg-white rounded-[2.5rem] border-2 border-black p-10' :
-                  'bg-white rounded-[2.5rem]'
+                <div className={`relative p-6 transition-all duration-300 flex flex-col items-center ${
+                  formData.selectedFrame === 'solid_black' ? 'bg-black rounded-[3rem]' :
+                  formData.selectedFrame === 'circle' ? 'bg-black rounded-full p-10' :
+                  formData.selectedFrame === 'label_bottom' ? 'bg-white rounded-[3rem] border-[3px] border-black' :
+                  formData.selectedFrame === 'bubble' ? 'bg-white rounded-[3rem] border-[3px] border-black mb-6' :
+                  formData.selectedFrame === 'rounded_accent' ? 'bg-white rounded-bl-[3rem] rounded-br-[3rem] rounded-tl-[3rem] border-[3px] border-black' :
+                  formData.selectedFrame === 'double_border' ? 'bg-white rounded-[3rem] border-[3px] border-black p-8' :
+                  'bg-white rounded-[3rem]'
                 }`}>
-                  <div className="relative bg-white p-4 rounded-[1.5rem] shadow-lg">
+                  <div className="relative bg-white p-4 rounded-[2rem] shadow-lg">
                     <QRCodeSVG 
                       id="qr-code-svg"
                       value={generatedUrl || ''}
@@ -1568,7 +1698,7 @@ export default function Home() {
                       includeMargin={true}
                       fgColor={formData.themeColor}
                       imageSettings={{
-                        src: "/logo.png",
+                        src: logoBase64 || "/logo.png",
                         x: undefined,
                         y: undefined,
                         height: 40,
@@ -1580,11 +1710,12 @@ export default function Home() {
                   
                   {/* Label Preview */}
                   {(formData.qrText || formData.selectedFrame !== 'none') && (
-                    <div className={`mt-4 text-center ${
+                    <div className={`mt-4 text-center w-full px-2 ${
                       formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle' ? 'text-white' : 'text-black'
                     }`}>
-                      <div className={`inline-block px-6 py-2 rounded-xl font-bold text-lg uppercase tracking-wider ${
-                        (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') ? 'bg-black text-white' : ''
+                      <div className={`inline-block px-6 py-3 rounded-2xl font-bold text-sm uppercase tracking-wider w-full max-w-[240px] ${
+                        (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') ? 'bg-black text-white shadow-lg' : 
+                        (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') ? 'bg-white/20 text-white backdrop-blur-sm' : ''
                       }`}>
                         {formData.qrText || 'SCAN ME'}
                       </div>

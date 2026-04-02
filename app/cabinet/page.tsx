@@ -26,10 +26,24 @@ export default function CabinetPage() {
   const [savedCards, setSavedCards] = useState<CarCardData[]>([]);
   const [mounted, setMounted] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CarCardData | null>(null);
+  const [logoBase64, setLogoBase64] = useState<string>('');
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+
+    // Load logo as base64 for QR code embedding
+    fetch('/logo.png')
+      .then(res => res.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setLogoBase64(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(err => console.error('Error loading logo for QR:', err));
+
     const saved = localStorage.getItem(SAVED_CARDS_KEY);
     if (saved && saved.trim() !== '') {
       try {
@@ -81,8 +95,6 @@ export default function CabinetPage() {
                 fill 
                 sizes="32px"
                 className="object-cover"
-                referrerPolicy="no-referrer"
-                unoptimized
               />
             </div>
             <span className="heading-section">
@@ -221,23 +233,25 @@ export default function CabinetPage() {
                       
                       {/* Frame Preview Wrapper */}
                       <div className={`relative p-6 transition-all duration-300 flex flex-col items-center ${
-                        selectedCard.selectedFrame === 'solid_black' ? 'bg-black rounded-[2rem]' :
-                        selectedCard.selectedFrame === 'circle' ? 'bg-black rounded-full p-10' :
-                        selectedCard.selectedFrame === 'label_bottom' ? 'bg-white rounded-[2rem] border-2 border-black' :
-                        selectedCard.selectedFrame === 'bubble' ? 'bg-white rounded-[2rem] border-2 border-black mb-4' :
-                        selectedCard.selectedFrame === 'rounded_accent' ? 'bg-white rounded-bl-[2rem] rounded-br-[2rem] rounded-tl-[2rem] border-2 border-black' :
-                        selectedCard.selectedFrame === 'double_border' ? 'bg-white rounded-[2rem] border-2 border-black p-8' :
-                        'bg-white rounded-[2rem]'
+                        selectedCard.selectedFrame === 'solid_black' ? 'bg-black rounded-[3rem]' :
+                        selectedCard.selectedFrame === 'circle' ? 'bg-black rounded-full p-12' :
+                        selectedCard.selectedFrame === 'label_bottom' ? 'bg-white rounded-[3rem] border-[3px] border-black' :
+                        selectedCard.selectedFrame === 'bubble' ? 'bg-white rounded-[3rem] border-[3px] border-black mb-6 relative after:content-[""] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-[12px] after:border-transparent after:border-t-black before:content-[""] before:absolute before:top-full before:left-1/2 before:-translate-x-1/2 before:border-[10px] before:border-transparent before:border-t-white before:z-10' :
+                        selectedCard.selectedFrame === 'rounded_accent' ? 'bg-white rounded-bl-[3rem] rounded-br-[3rem] rounded-tl-[3rem] border-[3px] border-black' :
+                        selectedCard.selectedFrame === 'double_border' ? 'bg-white rounded-[3rem] border-[3px] border-black p-8 shadow-[inset_0_0_0_4px_white,inset_0_0_0_7px_black]' :
+                        'bg-white rounded-[3rem]'
                       }`}>
-                        <div className="relative bg-white p-3 rounded-[1.2rem] shadow-lg">
+                        <div className={`relative bg-white p-3 rounded-[1.5rem] shadow-sm ${
+                          (selectedCard.selectedFrame === 'solid_black' || selectedCard.selectedFrame === 'circle') ? 'ring-8 ring-white' : ''
+                        }`}>
                           <QRCodeSVG 
                             value={`${window.location.origin}/card/${encodeCardData(selectedCard)}`}
                             size={180}
                             level="Q"
-                            includeMargin={true}
+                            includeMargin={false}
                             fgColor={selectedCard.themeColor}
                             imageSettings={{
-                              src: "/logo.png?v=4",
+                              src: logoBase64 || "/logo.png",
                               x: undefined,
                               y: undefined,
                               height: 32,
@@ -249,11 +263,11 @@ export default function CabinetPage() {
                         
                         {/* Label Preview */}
                         {(selectedCard.qrText || selectedCard.selectedFrame !== 'none') && (
-                          <div className={`mt-3 text-center ${
-                            selectedCard.selectedFrame === 'solid_black' || selectedCard.selectedFrame === 'circle' ? 'text-white' : 'text-black'
-                          }`}>
-                            <div className={`inline-block px-4 py-1 rounded-xl font-bold text-sm uppercase tracking-wider ${
-                              (selectedCard.selectedFrame === 'label_bottom' || selectedCard.selectedFrame === 'bubble') ? 'bg-black text-white' : ''
+                          <div className="mt-4 w-full flex justify-center">
+                            <div className={`px-6 py-2 rounded-2xl font-bold text-sm uppercase tracking-widest ${
+                              (selectedCard.selectedFrame === 'label_bottom' || selectedCard.selectedFrame === 'bubble') ? 'bg-black text-white' : 
+                              (selectedCard.selectedFrame === 'solid_black' || selectedCard.selectedFrame === 'circle') ? 'bg-white/20 text-white backdrop-blur-sm' :
+                              'text-black'
                             }`}>
                               {selectedCard.qrText || 'SCAN ME'}
                             </div>

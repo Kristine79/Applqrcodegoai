@@ -165,8 +165,6 @@ export default function PublicCardView() {
                   fill 
                   sizes="36px"
                   className="object-cover"
-                  referrerPolicy="no-referrer"
-                  unoptimized
                 />
               </Link>
             </div>

@@ -18,6 +18,10 @@ const oswald = Oswald({
 export const metadata: Metadata = {
   title: 'CarQR - Apple Glassmorphism Edition',
   description: 'Создание QR-визиток для автомобилей в стиле Apple Glassmorphism',
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
   openGraph: {
     title: 'CarQR',
     description: 'QR-визитка для вашего автомобиля',
