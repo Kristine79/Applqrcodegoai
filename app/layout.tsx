@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Oswald } from 'next/font/google';
 import './globals.css';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import GlobalErrorDisplay from '@/components/GlobalErrorDisplay';
@@ -9,29 +9,35 @@ const inter = Inter({
   variable: '--font-sans',
 });
 
+const oswald = Oswald({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin', 'cyrillic'],
+  variable: '--font-oswald',
+});
+
 export const metadata: Metadata = {
   title: 'CarQR - Apple Glassmorphism Edition',
   description: 'Создание QR-визиток для автомобилей в стиле Apple Glassmorphism',
   openGraph: {
     title: 'CarQR',
     description: 'QR-визитка для вашего автомобиля',
-    images: [{ url: '/logo.png?v=3' }],
+    images: [{ url: '/logo.png?v=4' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'CarQR',
     description: 'QR-визитка для вашего автомобиля',
-    images: ['/logo.png?v=3'],
+    images: ['/logo.png?v=4'],
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${inter.variable} dark`} suppressHydrationWarning>
+    <html lang="ru" className={`${inter.variable} ${oswald.variable} dark`} suppressHydrationWarning>
       <head>
         <script src="https://telegram.org/js/telegram-web-app.js" async></script>
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/logo.png" />
+        <link rel="apple-touch-icon" href="/logo.png?v=4" />
         <meta name="theme-color" content="#ff3b30" />
         <meta name="yandex-verification" content="29fe0c0e50aa1608" />
         <script

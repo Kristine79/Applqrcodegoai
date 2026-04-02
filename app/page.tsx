@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, ShieldCheck, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, ShieldCheck, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { encodeCardData, type CarCardData } from '@/lib/utils';
@@ -18,6 +18,16 @@ const BUTTON_OPTIONS = [
 
 const STORAGE_KEY = 'carqr_draft';
 const SAVED_CARDS_KEY = 'carqr_saved_cards';
+
+const FRAME_OPTIONS = [
+  { id: 'none', label: 'Без рамки', icon: QrCode },
+  { id: 'label_bottom', label: 'С подписью', icon: ShieldCheck },
+  { id: 'solid_black', label: 'Черный', icon: Package },
+  { id: 'bubble', label: 'Бабл', icon: MessageSquare },
+  { id: 'circle', label: 'Круг', icon: Palette },
+  { id: 'rounded_accent', label: 'Акцент', icon: Type },
+  { id: 'double_border', label: 'Двойная', icon: Zap },
+];
 
 export default function Home() {
   const router = useRouter();
@@ -35,6 +45,7 @@ export default function Home() {
     backgroundColor: '#000000',
     textColor: '#ffffff',
     qrText: '',
+    selectedFrame: 'none',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,11 +58,9 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
 
   const MOCKUP_IMAGES = [
-    { src: '/images/lob.jpg', title: 'Вид спереди', desc: 'Размещение на лобовом стекле' },
-    { src: '/images/sboku.jpg', title: 'Вид сбоку', desc: 'Размещение на боковом стекле' },
-    { src: '/images/szadi.jpg', title: 'Вид сзади', desc: 'Размещение на заднем стекле' },
-    
-    
+    { src: '/images/lob.jpg?v=4', title: 'Вид спереди', desc: 'Размещение на лобовом стекле' },
+    { src: '/images/sboku.jpg?v=4', title: 'Вид сбоку', desc: 'Размещение на боковом стекле' },
+    { src: '/images/szadi.jpg?v=4', title: 'Вид сзади', desc: 'Размещение на заднем стекле' },
   ];
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
@@ -181,6 +190,7 @@ export default function Home() {
       backgroundColor: '#000000',
       textColor: '#ffffff',
       qrText: '',
+      selectedFrame: 'none',
     });
     localStorage.removeItem(STORAGE_KEY);
     triggerVibration(20);
@@ -349,7 +359,7 @@ export default function Home() {
   };
 
   const shareApp = async () => {
-    const appUrl = 'https://autoqrcard.vercel.app/';
+    const appUrl = 'https://avtovisitka.ru/';
     if (navigator.share) {
       try {
         await navigator.share({
@@ -382,18 +392,20 @@ export default function Home() {
     const scale = 4;
     const qrSize = 240 * scale;
     const padding = 10 * scale;
-    const fontSize = 14 * scale;
-    const lineHeight = 18 * scale;
+    const framePadding = 20 * scale;
+    const fontSize = 16 * scale;
+    const lineHeight = 20 * scale;
     const maxWidth = qrSize - (padding * 2);
 
     ctx.font = `bold ${fontSize}px sans-serif`;
     
     // Calculate lines
-    const words = (formData.qrText || '').split(' ');
+    const labelText = (formData.qrText || 'SCAN ME').toUpperCase();
+    const words = labelText.split(' ');
     const lines: string[] = [];
     let currentLine = '';
 
-    if (formData.qrText) {
+    if (labelText) {
       for (let n = 0; n < words.length; n++) {
         const testLine = currentLine + words[n] + ' ';
         const metrics = ctx.measureText(testLine);
@@ -407,25 +419,173 @@ export default function Home() {
       lines.push(currentLine);
     }
 
-    const textHeight = lines.length > 0 ? (lines.length * lineHeight) + padding : 0;
+    const footerText = "Твоя цифровая авто визитка avtovisitka.ru";
+    const footerFontSize = 10 * scale;
+    const footerPadding = 15 * scale;
+
+    const labelHeight = lines.length > 0 ? (lines.length * lineHeight) + padding : 0;
+    const totalFooterHeight = footerFontSize + footerPadding;
     
-    canvas.width = qrSize;
-    canvas.height = qrSize + textHeight;
+    // Adjust canvas size based on frame
+    let canvasWidth = qrSize + (framePadding * 2);
+    let canvasHeight = qrSize + labelHeight + totalFooterHeight + (framePadding * 2);
+
+    if (formData.selectedFrame === 'circle') {
+      canvasWidth = qrSize + (framePadding * 4);
+      canvasHeight = canvasWidth + totalFooterHeight;
+    } else if (formData.selectedFrame === 'bubble') {
+      canvasHeight += 20 * scale; // Extra for pointer
+    }
+    
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     
     const img = new window.Image();
     img.onload = () => {
+      // Background for the whole image
       ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, qrSize, qrSize);
+
+      // Draw Frame
+      const frameX = framePadding;
+      const frameY = framePadding;
+      const frameWidth = canvas.width - (framePadding * 2);
+      const frameHeight = canvas.height - totalFooterHeight - (framePadding * 2);
+      const r = 20 * scale;
+
+      ctx.save();
+      if (formData.selectedFrame === 'label_bottom') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        
+        // Label box
+        if (lines.length > 0) {
+          ctx.fillStyle = '#000000';
+          const boxY = frameY + frameHeight - labelHeight;
+          ctx.beginPath();
+          ctx.roundRect(frameX + 10 * scale, boxY, frameWidth - 20 * scale, labelHeight - 10 * scale, 10 * scale);
+          ctx.fill();
+        }
+      } else if (formData.selectedFrame === 'solid_black') {
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        ctx.fill();
+      } else if (formData.selectedFrame === 'bubble') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight - 20 * scale, r);
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        
+        // Pointer
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2 - 15 * scale, frameY + frameHeight - 20 * scale);
+        ctx.lineTo(canvas.width / 2, frameY + frameHeight);
+        ctx.lineTo(canvas.width / 2 + 15 * scale, frameY + frameHeight - 20 * scale);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+        
+        // Label box
+        if (lines.length > 0) {
+          ctx.fillStyle = '#000000';
+          const boxY = frameY + frameHeight - labelHeight - 20 * scale;
+          ctx.beginPath();
+          ctx.roundRect(frameX + 20 * scale, boxY, frameWidth - 40 * scale, labelHeight - 10 * scale, 10 * scale);
+          ctx.fill();
+        }
+      } else if (formData.selectedFrame === 'circle') {
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, (canvas.height - totalFooterHeight) / 2, frameWidth / 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (formData.selectedFrame === 'rounded_accent') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(frameX + r, frameY);
+        ctx.lineTo(frameX + frameWidth, frameY); // Sharp top-right
+        ctx.lineTo(frameX + frameWidth, frameY + frameHeight - r);
+        ctx.arcTo(frameX + frameWidth, frameY + frameHeight, frameX + frameWidth - r, frameY + frameHeight, r);
+        ctx.lineTo(frameX + r, frameY + frameHeight);
+        ctx.arcTo(frameX, frameY + frameHeight, frameX, frameY + frameHeight - r, r);
+        ctx.lineTo(frameX, frameY + r);
+        ctx.arcTo(frameX, frameY, frameX + r, frameY, r);
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+      } else if (formData.selectedFrame === 'double_border') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.roundRect(frameX + 6 * scale, frameY + 6 * scale, frameWidth - 12 * scale, frameHeight - 12 * scale, r - 6 * scale);
+        ctx.stroke();
+      } else {
+        // none
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Draw QR
+      const qrX = (canvas.width - qrSize) / 2;
+      const qrY = frameY + 15 * scale;
+      
+      if (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') {
+        // Draw a white background for the QR code if the frame is black
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(qrX - 5 * scale, qrY - 5 * scale, qrSize + 10 * scale, qrSize + 10 * scale, 10 * scale);
+        ctx.fill();
+      }
+      
+      ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
       
       if (lines.length > 0) {
-        ctx.fillStyle = 'black';
         ctx.font = `bold ${fontSize}px sans-serif`;
         ctx.textAlign = 'center';
-        lines.forEach((line, i) => {
-          ctx.fillText(line.trim(), qrSize / 2, qrSize + (i * lineHeight) + fontSize);
-        });
+        
+        if (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') {
+          ctx.fillStyle = 'white';
+          const textY = frameY + frameHeight - (formData.selectedFrame === 'bubble' ? 20 * scale : 0) - (labelHeight / 2) + (fontSize / 2);
+          lines.forEach((line, i) => {
+            ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
+          });
+        } else if (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') {
+          ctx.fillStyle = 'white';
+          lines.forEach((line, i) => {
+            ctx.fillText(line.trim(), canvas.width / 2, qrY + qrSize + 25 * scale + (i * lineHeight));
+          });
+        } else {
+          ctx.fillStyle = 'black';
+          lines.forEach((line, i) => {
+            ctx.fillText(line.trim(), canvas.width / 2, qrY + qrSize + 25 * scale + (i * lineHeight));
+          });
+        }
       }
+
+      // Draw footer
+      ctx.fillStyle = '#444444';
+      ctx.font = `500 ${footerFontSize}px Oswald, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(footerText, canvas.width / 2, canvas.height - (footerPadding / 2));
       
       const pngFile = canvas.toDataURL('image/png', 1.0);
       const downloadLink = document.createElement('a');
@@ -466,18 +626,20 @@ export default function Home() {
     const scale = 4;
     const qrSize = 240 * scale;
     const padding = 10 * scale;
-    const fontSize = 14 * scale;
-    const lineHeight = 18 * scale;
+    const framePadding = 20 * scale;
+    const fontSize = 16 * scale;
+    const lineHeight = 20 * scale;
     const maxWidth = qrSize - (padding * 2);
 
     ctx.font = `bold ${fontSize}px sans-serif`;
     
     // Calculate lines
-    const words = (formData.qrText || '').split(' ');
+    const labelText = (formData.qrText || 'SCAN ME').toUpperCase();
+    const words = labelText.split(' ');
     const lines: string[] = [];
     let currentLine = '';
 
-    if (formData.qrText) {
+    if (labelText) {
       for (let n = 0; n < words.length; n++) {
         const testLine = currentLine + words[n] + ' ';
         const metrics = ctx.measureText(testLine);
@@ -491,25 +653,173 @@ export default function Home() {
       lines.push(currentLine);
     }
 
-    const textHeight = lines.length > 0 ? (lines.length * lineHeight) + padding : 0;
+    const footerText = "Твоя цифровая авто визитка avtovisitka.ru";
+    const footerFontSize = 10 * scale;
+    const footerPadding = 15 * scale;
+
+    const labelHeight = lines.length > 0 ? (lines.length * lineHeight) + padding : 0;
+    const totalFooterHeight = footerFontSize + footerPadding;
     
-    canvas.width = qrSize;
-    canvas.height = qrSize + textHeight;
+    // Adjust canvas size based on frame
+    let canvasWidth = qrSize + (framePadding * 2);
+    let canvasHeight = qrSize + labelHeight + totalFooterHeight + (framePadding * 2);
+
+    if (formData.selectedFrame === 'circle') {
+      canvasWidth = qrSize + (framePadding * 4);
+      canvasHeight = canvasWidth + totalFooterHeight;
+    } else if (formData.selectedFrame === 'bubble') {
+      canvasHeight += 20 * scale; // Extra for pointer
+    }
+    
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     
     const img = new window.Image();
     img.onload = async () => {
+      // Background for the whole image
       ctx.fillStyle = 'white';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, qrSize, qrSize);
+
+      // Draw Frame
+      const frameX = framePadding;
+      const frameY = framePadding;
+      const frameWidth = canvas.width - (framePadding * 2);
+      const frameHeight = canvas.height - totalFooterHeight - (framePadding * 2);
+      const r = 20 * scale;
+
+      ctx.save();
+      if (formData.selectedFrame === 'label_bottom') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        
+        // Label box
+        if (lines.length > 0) {
+          ctx.fillStyle = '#000000';
+          const boxY = frameY + frameHeight - labelHeight;
+          ctx.beginPath();
+          ctx.roundRect(frameX + 10 * scale, boxY, frameWidth - 20 * scale, labelHeight - 10 * scale, 10 * scale);
+          ctx.fill();
+        }
+      } else if (formData.selectedFrame === 'solid_black') {
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        ctx.fill();
+      } else if (formData.selectedFrame === 'bubble') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight - 20 * scale, r);
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        
+        // Pointer
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2 - 15 * scale, frameY + frameHeight - 20 * scale);
+        ctx.lineTo(canvas.width / 2, frameY + frameHeight);
+        ctx.lineTo(canvas.width / 2 + 15 * scale, frameY + frameHeight - 20 * scale);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.stroke();
+        
+        // Label box
+        if (lines.length > 0) {
+          ctx.fillStyle = '#000000';
+          const boxY = frameY + frameHeight - labelHeight - 20 * scale;
+          ctx.beginPath();
+          ctx.roundRect(frameX + 20 * scale, boxY, frameWidth - 40 * scale, labelHeight - 10 * scale, 10 * scale);
+          ctx.fill();
+        }
+      } else if (formData.selectedFrame === 'circle') {
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, (canvas.height - totalFooterHeight) / 2, frameWidth / 2, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (formData.selectedFrame === 'rounded_accent') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.moveTo(frameX + r, frameY);
+        ctx.lineTo(frameX + frameWidth, frameY); // Sharp top-right
+        ctx.lineTo(frameX + frameWidth, frameY + frameHeight - r);
+        ctx.arcTo(frameX + frameWidth, frameY + frameHeight, frameX + frameWidth - r, frameY + frameHeight, r);
+        ctx.lineTo(frameX + r, frameY + frameHeight);
+        ctx.arcTo(frameX, frameY + frameHeight, frameX, frameY + frameHeight - r, r);
+        ctx.lineTo(frameX, frameY + r);
+        ctx.arcTo(frameX, frameY, frameX + r, frameY, r);
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+      } else if (formData.selectedFrame === 'double_border') {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        ctx.fill();
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        
+        ctx.beginPath();
+        ctx.roundRect(frameX + 6 * scale, frameY + 6 * scale, frameWidth - 12 * scale, frameHeight - 12 * scale, r - 6 * scale);
+        ctx.stroke();
+      } else {
+        // none
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(frameX, frameY, frameWidth, frameHeight, r);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Draw QR
+      const qrX = (canvas.width - qrSize) / 2;
+      const qrY = frameY + 15 * scale;
+      
+      if (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') {
+        // Draw a white background for the QR code if the frame is black
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(qrX - 5 * scale, qrY - 5 * scale, qrSize + 10 * scale, qrSize + 10 * scale, 10 * scale);
+        ctx.fill();
+      }
+      
+      ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
       
       if (lines.length > 0) {
-        ctx.fillStyle = 'black';
         ctx.font = `bold ${fontSize}px sans-serif`;
         ctx.textAlign = 'center';
-        lines.forEach((line, i) => {
-          ctx.fillText(line.trim(), qrSize / 2, qrSize + (i * lineHeight) + fontSize);
-        });
+        
+        if (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') {
+          ctx.fillStyle = 'white';
+          const textY = frameY + frameHeight - (formData.selectedFrame === 'bubble' ? 20 * scale : 0) - (labelHeight / 2) + (fontSize / 2);
+          lines.forEach((line, i) => {
+            ctx.fillText(line.trim(), canvas.width / 2, textY + (i * lineHeight));
+          });
+        } else if (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') {
+          ctx.fillStyle = 'white';
+          lines.forEach((line, i) => {
+            ctx.fillText(line.trim(), canvas.width / 2, qrY + qrSize + 25 * scale + (i * lineHeight));
+          });
+        } else {
+          ctx.fillStyle = 'black';
+          lines.forEach((line, i) => {
+            ctx.fillText(line.trim(), canvas.width / 2, qrY + qrSize + 25 * scale + (i * lineHeight));
+          });
+        }
       }
+
+      // Draw footer
+      ctx.fillStyle = '#444444';
+      ctx.font = `500 ${footerFontSize}px Oswald, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(footerText, canvas.width / 2, canvas.height - (footerPadding / 2));
       
       canvas.toBlob(async (blob) => {
           if (!blob) return;
@@ -544,22 +854,32 @@ export default function Home() {
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-[46px] h-[46px] relative rounded-lg overflow-hidden shadow-lg border border-white/10">
             <Image 
-              src="/logo.png" 
+              src="/logo.png?v=4" 
               alt="CarQR Logo" 
               fill 
               sizes="46px"
               className="object-cover"
               referrerPolicy="no-referrer"
+              unoptimized
             />
           </div>
-          <span className="heading-section">
+          <span className="heading-section flex items-center">
             Car
-            <motion.span
-              animate={{ color: ['#ffffff', '#ef4444', '#ffffff'] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              QR
-            </motion.span>
+            <span className="relative inline-flex items-center justify-center w-8 h-6 ml-1">
+              <motion.span
+                animate={{ 
+                  color: ["#ffffff", "#ff3b30", "#ff3b30", "#ffffff"]
+                }}
+                transition={{ 
+                  duration: 4, 
+                  repeat: Infinity, 
+                  times: [0, 0.4, 0.6, 1],
+                  ease: "easeInOut"
+                }}
+              >
+                QR
+              </motion.span>
+            </span>
           </span>
         </Link>
         <div className="flex items-center gap-2">
@@ -674,7 +994,7 @@ export default function Home() {
         {savedCards.length > 0 && (
           <div className="glass-card p-3 relative overflow-hidden">
             <div className="flex items-center justify-between mb-2 px-1">
-              <h3 className="text-caption">Недавние визитки</h3>
+              <h3 className="text-caption">Ваши визитки</h3>
               <Link href="/cabinet" className="text-caption text-apple-red hover:opacity-80 transition-opacity">Все</Link>
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -700,22 +1020,12 @@ export default function Home() {
           </div>
         )}
 
-        <div className="glass-card p-4 md:p-5 relative overflow-hidden">
+        <div className="glass-card pt-3 pb-4 px-4 md:pt-4 md:pb-5 md:px-5 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-apple-red/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
           
-                  <div className="flex flex-col items-center text-center gap-1.5 mb-5 relative z-10">
-            <div className="w-[58px] h-[58px] relative rounded-xl overflow-hidden border border-white/20 shadow-2xl">
-              <Image 
-                src="/logo.png" 
-                alt="Logo" 
-                fill 
-                sizes="58px"
-                className="object-cover"
-                referrerPolicy="no-referrer"
-              />
-            </div>
+          <div className="flex flex-col items-center text-center gap-1 mb-3 relative z-10">
             <div>
-              <h1 className="heading-section">Создать визитку</h1>
+              <h1 className="heading-section">СОЗДАТЬ QR ВИЗИТКУ</h1>
               <p className="text-secondary text-sm">Безопасное шифрование данных</p>
             </div>
           </div>
@@ -805,7 +1115,7 @@ export default function Home() {
                             value={formData.carModel || ''}
                             onChange={handleInputChange}
                             placeholder="Tesla Model 3"
-                            className={`w-full bg-white/5 border-2 ${errors.carModel ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary`}
+                            className={`w-full bg-white/5 border-2 ${errors.carModel ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
                         </motion.div>
                       </div>
@@ -822,7 +1132,7 @@ export default function Home() {
                             value={formData.plateNumber || ''}
                             onChange={handleInputChange}
                             placeholder="А123ВС 777"
-                            className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary`}
+                            className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
                         </motion.div>
                       </div>
@@ -871,7 +1181,7 @@ export default function Home() {
                             value={formData.ownerName || ''}
                             onChange={handleInputChange}
                             placeholder="Ваше имя"
-                            className={`w-full bg-white/5 border-2 ${errors.ownerName ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary`}
+                            className={`w-full bg-white/5 border-2 ${errors.ownerName ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
                         </motion.div>
                       </div>
@@ -888,7 +1198,7 @@ export default function Home() {
                             value={formData.phone1 || ''}
                             onChange={handleInputChange}
                             placeholder="Телефон"
-                            className={`w-full bg-white/5 border-2 ${errors.phone1 ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary`}
+                            className={`w-full bg-white/5 border-2 ${errors.phone1 ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
                         </motion.div>
                       </div>
@@ -931,7 +1241,7 @@ export default function Home() {
                           value={formData.telegram || ''}
                           onChange={handleInputChange}
                           placeholder="Telegram (username)"
-                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-white/30"
+                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30"
                         />
                       </div>
 
@@ -942,7 +1252,7 @@ export default function Home() {
                           value={formData.whatsapp || ''}
                           onChange={handleInputChange}
                           placeholder="WhatsApp (+7...)"
-                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base focus:border-apple-red transition-all outline-none placeholder:text-tertiary"
+                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30"
                         />
                       </div>
                     </div>
@@ -1056,11 +1366,35 @@ export default function Home() {
                           <Type className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-tertiary" />
                           <input
                             name="qrText"
+                            maxLength={20}
                             value={formData.qrText || ''}
                             onChange={handleInputChange}
                             placeholder="Сканируй меня!"
-                            className="w-full bg-white/5 border-2 border-white/5 rounded-xl pl-8 pr-3 py-2 text-base focus:border-apple-red outline-none transition-all placeholder:text-tertiary"
+                            className="w-full bg-white/5 border-2 border-white/5 rounded-xl pl-8 pr-3 py-2 text-base font-heading text-white focus:border-apple-red outline-none transition-all placeholder:text-white/30"
                           />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 col-span-full pt-2">
+                        <label className="text-caption ml-1">Рамка QR-кода</label>
+                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+                          {FRAME_OPTIONS.map((frame) => (
+                            <button
+                              key={frame.id}
+                              type="button"
+                              onClick={() => setFormData(prev => ({ ...prev, selectedFrame: frame.id }))}
+                              className={`flex-shrink-0 flex flex-col items-center justify-center min-w-[85px] p-2.5 rounded-xl border-2 transition-all active:scale-95 ${
+                                formData.selectedFrame === frame.id
+                                  ? 'bg-apple-red border-transparent text-white red-glow'
+                                  : 'bg-white/5 border-white/5 text-white hover:border-white/10'
+                              }`}
+                            >
+                              <frame.icon className="w-4 h-4 mb-1.5" />
+                              <span className="text-[9px] uppercase tracking-wider font-bold text-center">
+                                {frame.label}
+                              </span>
+                            </button>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -1096,7 +1430,7 @@ export default function Home() {
                   >
                     <QrCode className="w-6 h-6" />
                   </motion.div>
-                  Создать QR-код
+                  СОЗДАТЬ QR-КОД
                 </>
               )}
             </button>
@@ -1114,7 +1448,7 @@ export default function Home() {
           <div className="flex flex-col items-center gap-4">
             <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
               <ShieldCheck className="w-4 h-4 text-apple-red" />
-              <span className="text-[10px] text-tertiary leading-tight max-w-[220px] text-left uppercase tracking-wider font-medium">
+              <span className="text-[10px] text-tertiary leading-tight max-w-[220px] text-center uppercase tracking-wider font-medium">
                 Данные не хранятся на сервере, а кодируются прямо в QR-код
               </span>
             </div>
@@ -1210,20 +1544,52 @@ export default function Home() {
             <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center gap-10">
               <div className="relative group">
                 <div className="absolute -inset-4 red-gradient rounded-[3rem] blur-2xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div className="relative bg-white p-8 rounded-[2.5rem] shadow-2xl flex flex-col items-center max-w-full">
-                  <QRCodeSVG 
-                    id="qr-code-svg"
-                    value={generatedUrl}
-                    size={280}
-                    level="Q"
-                    includeMargin={true}
-                    fgColor={formData.themeColor}
-                    className="max-w-full h-auto"
-                  />
-                  {formData.qrText && (
-                    <div className="mt-2 text-black font-bold text-xl text-center break-words max-w-[280px]">
-                      {formData.qrText}
+                
+                {/* Frame Preview Wrapper */}
+                <div className={`relative p-8 transition-all duration-300 flex flex-col items-center ${
+                  formData.selectedFrame === 'solid_black' ? 'bg-black rounded-[2.5rem]' :
+                  formData.selectedFrame === 'circle' ? 'bg-black rounded-full p-12' :
+                  formData.selectedFrame === 'label_bottom' ? 'bg-white rounded-[2.5rem] border-2 border-black' :
+                  formData.selectedFrame === 'bubble' ? 'bg-white rounded-[2.5rem] border-2 border-black mb-6' :
+                  formData.selectedFrame === 'rounded_accent' ? 'bg-white rounded-bl-[2.5rem] rounded-br-[2.5rem] rounded-tl-[2.5rem] border-2 border-black' :
+                  formData.selectedFrame === 'double_border' ? 'bg-white rounded-[2.5rem] border-2 border-black p-10' :
+                  'bg-white rounded-[2.5rem]'
+                }`}>
+                  <div className="relative bg-white p-4 rounded-[1.5rem] shadow-lg">
+                    <QRCodeSVG 
+                      id="qr-code-svg"
+                      value={generatedUrl || ''}
+                      size={240}
+                      level="Q"
+                      includeMargin={true}
+                      fgColor={formData.themeColor}
+                      imageSettings={{
+                        src: "/logo.png?v=4",
+                        x: undefined,
+                        y: undefined,
+                        height: 40,
+                        width: 40,
+                        excavate: true,
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Label Preview */}
+                  {(formData.qrText || formData.selectedFrame !== 'none') && (
+                    <div className={`mt-4 text-center ${
+                      formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle' ? 'text-white' : 'text-black'
+                    }`}>
+                      <div className={`inline-block px-6 py-2 rounded-xl font-bold text-lg uppercase tracking-wider ${
+                        (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') ? 'bg-black text-white' : ''
+                      }`}>
+                        {formData.qrText || 'SCAN ME'}
+                      </div>
                     </div>
+                  )}
+
+                  {/* Bubble Pointer Preview */}
+                  {formData.selectedFrame === 'bubble' && (
+                    <div className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[20px] border-t-black"></div>
                   )}
                 </div>
               </div>
@@ -1235,7 +1601,7 @@ export default function Home() {
                     className="py-3 px-2 rounded-2xl bg-apple-red text-white font-bold flex flex-col items-center justify-center gap-1.5 shadow-xl red-glow hover:brightness-110 transition-all"
                   >
                     <Download className="w-4 h-4" />
-                    <span className="text-caption">Скачать</span>
+                    <span className="text-caption !text-white">Скачать</span>
                   </button>
                   
                   <button
@@ -1277,7 +1643,7 @@ export default function Home() {
                     <button
                       onClick={() => {
                         const text = encodeURIComponent('CarQR — Ваш QR-код для связи');
-                        const url = encodeURIComponent('https://autoqrcard.vercel.app/');
+                        const url = encodeURIComponent('https://avtovisitka.ru/');
                         window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
                       }}
                       className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all"
@@ -1288,7 +1654,7 @@ export default function Home() {
                     <button
                       onClick={() => {
                         const text = encodeURIComponent('CarQR — Ваш QR-код для связи: ');
-                        const url = encodeURIComponent('https://autoqrcard.vercel.app/');
+                        const url = encodeURIComponent('https://avtovisitka.ru/');
                         window.open(`https://wa.me/?text=${text}${url}`, '_blank');
                       }}
                       className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all"
@@ -1298,7 +1664,7 @@ export default function Home() {
                     </button>
                     <button
                       onClick={() => {
-                        const url = encodeURIComponent('https://autoqrcard.vercel.app/');
+                        const url = encodeURIComponent('https://avtovisitka.ru/');
                         window.open(`https://vk.com/share.php?url=${url}`, '_blank');
                       }}
                       className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all"
@@ -1369,6 +1735,7 @@ export default function Home() {
                       fill 
                       className="object-cover"
                       referrerPolicy="no-referrer"
+                      unoptimized
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-8">
                       <p className="heading-card text-xl">{MOCKUP_IMAGES[currentMockupIndex].title}</p>

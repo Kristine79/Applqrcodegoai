@@ -124,7 +124,7 @@ export default function OrderPage() {
       <header className="glass-panel sticky top-0 z-50 mx-2 mt-2 px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <div className="w-8 h-8 relative rounded-lg overflow-hidden border border-white/10">
-            <Image src="/logo.png" alt="Logo" fill sizes="32px" className="object-cover" />
+            <Image src="/logo.png?v=4" alt="Logo" fill sizes="32px" className="object-cover" unoptimized />
           </div>
           <span className="heading-section">
             Car
@@ -143,7 +143,7 @@ export default function OrderPage() {
 
       <main className="max-w-xl mx-auto p-4 space-y-6">
         <div className="space-y-2">
-          <h1 className="heading-display">Заказать наклейку</h1>
+          <h1 className="heading-display">ЗАКАЗАТЬ НАКЛЕЙКУ</h1>
           <p className="text-sm text-secondary">Профессиональная печать вашего QR-кода</p>
         </div>
 
@@ -353,7 +353,7 @@ export default function OrderPage() {
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 ) : (
                   <>
-                    <span>Оплатить</span>
+                    <span>ОПЛАТИТЬ</span>
                     <ChevronRight className="w-4 h-4" />
                   </>
                 )}

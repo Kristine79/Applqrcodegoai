@@ -20,6 +20,7 @@ export interface CarCardData {
   backgroundColor?: string;
   textColor?: string;
   qrText?: string;
+  selectedFrame?: string;
 }
 
 const KEY_MAP: Record<string, string> = {
@@ -37,7 +38,8 @@ const KEY_MAP: Record<string, string> = {
   themeColor: 'tc',
   backgroundColor: 'bc',
   textColor: 'lc',
-  qrText: 'qt'
+  qrText: 'qt',
+  selectedFrame: 'sf'
 };
 
 const REVERSE_KEY_MAP = Object.fromEntries(

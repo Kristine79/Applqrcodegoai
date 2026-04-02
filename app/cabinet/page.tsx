@@ -76,12 +76,13 @@ export default function CabinetPage() {
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="w-8 h-8 relative rounded-lg overflow-hidden border border-white/10 shadow-lg">
               <Image 
-                src="/logo.png" 
+                src="/logo.png?v=4" 
                 alt="Logo" 
                 fill 
                 sizes="32px"
                 className="object-cover"
                 referrerPolicy="no-referrer"
+                unoptimized
               />
             </div>
             <span className="heading-section">
@@ -153,7 +154,7 @@ export default function CabinetPage() {
                 href="/" 
                 className="inline-block px-4 py-1.5 bg-apple-red rounded-xl text-[11px] uppercase tracking-wider font-bold text-white hover:scale-105 transition-all"
               >
-                Создать первую
+                СОЗДАТЬ ПЕРВУЮ
               </Link>
             </div>
           ) : (
@@ -217,22 +218,52 @@ export default function CabinetPage() {
                   <div className="flex flex-col items-center gap-2">
                     <div className="relative group">
                       <div className="absolute -inset-4 red-gradient rounded-[3rem] blur-2xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                      <div className="relative bg-white p-4 rounded-[2rem] shadow-2xl">
-                        <QRCodeSVG 
-                          value={`${window.location.origin}/card/${encodeCardData(selectedCard)}`}
-                          size={200}
-                          level="Q"
-                          includeMargin={true}
-                          fgColor={selectedCard.themeColor}
-                          imageSettings={{
-                            src: "/logo.png?v=3",
-                            x: undefined,
-                            y: undefined,
-                            height: 32,
-                            width: 32,
-                            excavate: true,
-                          }}
-                        />
+                      
+                      {/* Frame Preview Wrapper */}
+                      <div className={`relative p-6 transition-all duration-300 flex flex-col items-center ${
+                        selectedCard.selectedFrame === 'solid_black' ? 'bg-black rounded-[2rem]' :
+                        selectedCard.selectedFrame === 'circle' ? 'bg-black rounded-full p-10' :
+                        selectedCard.selectedFrame === 'label_bottom' ? 'bg-white rounded-[2rem] border-2 border-black' :
+                        selectedCard.selectedFrame === 'bubble' ? 'bg-white rounded-[2rem] border-2 border-black mb-4' :
+                        selectedCard.selectedFrame === 'rounded_accent' ? 'bg-white rounded-bl-[2rem] rounded-br-[2rem] rounded-tl-[2rem] border-2 border-black' :
+                        selectedCard.selectedFrame === 'double_border' ? 'bg-white rounded-[2rem] border-2 border-black p-8' :
+                        'bg-white rounded-[2rem]'
+                      }`}>
+                        <div className="relative bg-white p-3 rounded-[1.2rem] shadow-lg">
+                          <QRCodeSVG 
+                            value={`${window.location.origin}/card/${encodeCardData(selectedCard)}`}
+                            size={180}
+                            level="Q"
+                            includeMargin={true}
+                            fgColor={selectedCard.themeColor}
+                            imageSettings={{
+                              src: "/logo.png?v=4",
+                              x: undefined,
+                              y: undefined,
+                              height: 32,
+                              width: 32,
+                              excavate: true,
+                            }}
+                          />
+                        </div>
+                        
+                        {/* Label Preview */}
+                        {(selectedCard.qrText || selectedCard.selectedFrame !== 'none') && (
+                          <div className={`mt-3 text-center ${
+                            selectedCard.selectedFrame === 'solid_black' || selectedCard.selectedFrame === 'circle' ? 'text-white' : 'text-black'
+                          }`}>
+                            <div className={`inline-block px-4 py-1 rounded-xl font-bold text-sm uppercase tracking-wider ${
+                              (selectedCard.selectedFrame === 'label_bottom' || selectedCard.selectedFrame === 'bubble') ? 'bg-black text-white' : ''
+                            }`}>
+                              {selectedCard.qrText || 'SCAN ME'}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Bubble Pointer Preview */}
+                        {selectedCard.selectedFrame === 'bubble' && (
+                          <div className="absolute bottom-[-15px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[15px] border-t-black"></div>
+                        )}
                       </div>
                     </div>
                     <p className="text-caption mt-2">Ваш QR-код</p>

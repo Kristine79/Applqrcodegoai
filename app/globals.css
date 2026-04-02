@@ -6,6 +6,8 @@
   --color-apple-red: #ff3b30;
   --color-apple-red-dark: #8b0000;
   
+  --font-heading: var(--font-oswald);
+  
   --animate-gradient-x: gradient-x 3s ease infinite;
 
   @keyframes gradient-x {
@@ -51,22 +53,34 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight text-white;
+    @apply font-heading font-normal tracking-tight text-white;
+  }
+
+  .font-black {
+    @apply font-heading font-normal;
+  }
+
+  input, textarea {
+    @apply font-heading text-white;
+  }
+
+  input::placeholder, textarea::placeholder {
+    @apply text-gray-500 font-heading;
   }
 }
 
 @layer components {
   /* Typography System */
   .heading-display {
-    @apply text-4xl md:text-6xl font-bold tracking-tighter leading-[0.85] text-white;
+    @apply text-4xl md:text-6xl font-heading font-normal tracking-tighter leading-[0.85] text-white;
   }
   
   .heading-section {
-    @apply text-2xl font-bold tracking-tight text-white;
+    @apply text-2xl font-heading font-normal tracking-tight text-white;
   }
 
   .heading-card {
-    @apply text-lg font-bold tracking-tight text-white;
+    @apply text-lg font-heading font-normal tracking-tight text-white;
   }
   
   .text-body {
@@ -78,7 +92,7 @@
   }
   
   .text-caption {
-    @apply text-[11px] font-medium text-white/40 uppercase tracking-wider;
+    @apply text-[11px] font-medium text-gray-400 uppercase tracking-wider;
   }
   
   .text-label {
@@ -94,7 +108,7 @@
   }
 
   .text-tertiary {
-    @apply text-white/40;
+    @apply text-gray-400;
   }
 
   .text-muted {

@@ -123,7 +123,7 @@ export default function PublicCardView() {
           onClick={() => window.location.href = '/'}
           className="mt-8 py-4 px-8 rounded-2xl bg-white/5 text-white font-bold hover:bg-white/10 transition-all border border-white/5"
         >
-          На главную
+          НА ГЛАВНУЮ
         </button>
       </div>
     );
@@ -160,12 +160,13 @@ export default function PublicCardView() {
               </Link>
               <Link href="/" className="w-9 h-9 relative rounded-xl overflow-hidden border border-white/10 shadow-xl hover:opacity-80 transition-opacity">
                 <Image 
-                  src="/logo.png" 
+                  src="/logo.png?v=4" 
                   alt="Logo" 
                   fill 
                   sizes="36px"
                   className="object-cover"
                   referrerPolicy="no-referrer"
+                  unoptimized
                 />
               </Link>
             </div>
@@ -323,7 +324,7 @@ export default function PublicCardView() {
             <button
               onClick={() => {
                 const text = encodeURIComponent('CarQR — Ваш QR-код для связи');
-                const url = encodeURIComponent('https://autoqrcard.vercel.app/');
+                const url = encodeURIComponent('https://avtovisitka.ru/');
                 window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
               }}
               className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all shadow-xl"
@@ -334,7 +335,7 @@ export default function PublicCardView() {
             <button
               onClick={() => {
                 const text = encodeURIComponent('CarQR — Ваш QR-код для связи: ');
-                const url = encodeURIComponent('https://autoqrcard.vercel.app/');
+                const url = encodeURIComponent('https://avtovisitka.ru/');
                 window.open(`https://wa.me/?text=${text}${url}`, '_blank');
               }}
               className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all shadow-xl"
