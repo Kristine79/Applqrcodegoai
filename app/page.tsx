@@ -1595,6 +1595,30 @@ export default function Home() {
               </div>
 
               <div className="w-full max-w-sm space-y-4">
+                {/* Frame Selector in Modal */}
+                <div className="space-y-3">
+                  <p className="text-caption text-center">Изменить дизайн рамки</p>
+                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                    {FRAME_OPTIONS.map((frame) => (
+                      <button
+                        key={frame.id}
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, selectedFrame: frame.id }));
+                          triggerVibration(10);
+                        }}
+                        className={`flex-shrink-0 w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
+                          formData.selectedFrame === frame.id 
+                            ? 'bg-apple-red border-transparent text-white shadow-lg' 
+                            : 'bg-white/5 border-white/10 text-white/60 hover:border-white/20'
+                        }`}
+                      >
+                        <frame.icon className="w-5 h-5" />
+                        <span className="text-[8px] uppercase font-bold text-center px-1">{frame.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     onClick={downloadQR}
