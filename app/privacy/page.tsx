@@ -111,7 +111,17 @@ export default function PrivacyPage() {
               </span>
             </div>
           </div>
-          <p className="text-[10px] text-tertiary uppercase tracking-wider font-medium">© 2026 CarQR. Все права защищены.</p>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-[10px] text-tertiary uppercase tracking-wider font-medium">© 2026 CarQR. Все права защищены.</p>
+            <div className="flex flex-wrap justify-center gap-x-4 text-[10px] font-medium uppercase tracking-wider">
+              <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
+                Политика конфиденциальности
+              </Link>
+              <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
+                Обработка данных
+              </Link>
+            </div>
+          </div>
         </footer>
       </div>
     </div>

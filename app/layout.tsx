@@ -19,7 +19,11 @@ export const metadata: Metadata = {
   title: 'CarQR - Apple Glassmorphism Edition',
   description: 'Создание QR-визиток для автомобилей в стиле Apple Glassmorphism',
   icons: {
-    icon: '/logo.png',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/logo.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
     apple: '/logo.png',
   },
   openGraph: {

@@ -348,8 +348,10 @@ export default function CabinetPage() {
                 Данные не хранятся на сервере, а кодируются прямо в QR-код
               </span>
             </div>
-            
-            <div className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 text-[10px] font-medium uppercase tracking-wider">
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-[10px] text-tertiary uppercase tracking-wider font-medium">© 2026 CarQR. Все права защищены.</p>
+            <div className="flex flex-wrap justify-center gap-x-4 text-[10px] font-medium uppercase tracking-wider">
               <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
                 Политика конфиденциальности
               </Link>
@@ -358,7 +360,6 @@ export default function CabinetPage() {
               </Link>
             </div>
           </div>
-          <p className="text-[10px] text-tertiary uppercase tracking-wider font-medium">© 2026 CarQR. Все права защищены.</p>
         </footer>
       </div>
     </div>
