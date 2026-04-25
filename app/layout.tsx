@@ -16,8 +16,8 @@ const oswald = Oswald({
 });
 
 export const metadata: Metadata = {
-  title: 'CarQR - Apple Glassmorphism Edition',
-  description: 'Создание QR-визиток для автомобилей в стиле Apple Glassmorphism',
+  title: 'CarQR — QR-визитка для вашего автомобиля',
+  description: 'Создайте QR-код для автомобиля, чтобы другие водители могли связаться с вами при необходимости. Бесплатно, безопасно, без регистрации.',
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -43,6 +43,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ru" className={`${inter.variable} ${oswald.variable} dark`} suppressHydrationWarning>
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'CarQR',
+              url: 'https://avtovisitka.ru',
+              description: 'Создайте QR-код для автомобиля, чтобы другие водители могли связаться с вами при необходимости.',
+              applicationCategory: 'UtilityApplication',
+              operatingSystem: 'All',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'RUB',
+              },
+              inLanguage: 'ru',
+            }),
+          }}
+        />
         <script src="https://telegram.org/js/telegram-web-app.js" async></script>
         <link rel="manifest" href="/manifest.json" />
         <link rel="apple-touch-icon" href="/logo.png" />

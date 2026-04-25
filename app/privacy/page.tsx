@@ -60,7 +60,7 @@ export default function PrivacyPage() {
             </div>
           </div>
 
-          <section className="space-y-6 pt-8 border-t border-white/10">
+          <section id="data-processing" className="space-y-6 pt-8 border-t border-white/10 scroll-mt-8">
             <div className="flex items-center gap-3">
               <FileText className="w-6 h-6 text-apple-red" />
               <h2 className="text-2xl font-bold">Обработка данных</h2>

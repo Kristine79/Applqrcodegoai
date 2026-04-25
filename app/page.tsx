@@ -70,7 +70,7 @@ export default function Home() {
   const [showStats, setShowStats] = useState(false);
   const [savedCards, setSavedCards] = useState<CarCardData[]>([]);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    instruction: false,
+    instruction: true,
     car: true,
     owner: true,
     socials: false,
@@ -442,7 +442,7 @@ export default function Home() {
     ctx.font = `bold ${fontSize}px sans-serif`;
     
     // Calculate lines
-    const labelText = (formData.qrText || 'SCAN ME').toUpperCase();
+    const labelText = (formData.qrText || 'СКАНИРУЙ МЕНЯ').toUpperCase();
     const words = labelText.split(' ');
     const lines: string[] = [];
     let currentLine = '';
@@ -735,7 +735,7 @@ export default function Home() {
     ctx.font = `bold ${fontSize}px sans-serif`;
     
     // Calculate lines
-    const labelText = (formData.qrText || 'SCAN ME').toUpperCase();
+    const labelText = (formData.qrText || 'СКАНИРУЙ МЕНЯ').toUpperCase();
     const words = labelText.split(' ');
     const lines: string[] = [];
     let currentLine = '';
@@ -987,9 +987,10 @@ export default function Home() {
           <div className="w-[46px] h-[46px] relative rounded-lg overflow-hidden shadow-lg border border-white/10">
             <Image 
               src="/logo.png" 
-              alt="CarQR Logo" 
+              alt="CarQR — QR-визитка для автомобиля" 
               fill 
               sizes="46px"
+              priority
               className="object-cover"
             />
           </div>
@@ -1233,37 +1234,47 @@ export default function Home() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
                       <div className="space-y-1.5">
-                        <label className="text-caption ml-1">Марка и модель</label>
+                        <label htmlFor="carModel" className="text-caption ml-1">Марка и модель <span className="text-apple-red">*</span></label>
                         <motion.div
                           animate={errors.carModel ? { x: [-4, 4, -4, 4, 0] } : {}}
                           transition={{ duration: 0.4 }}
                         >
                           <input
-                            required
+                            id="carModel"
                             name="carModel"
                             ref={carModelRef}
+                            aria-label="Марка и модель автомобиля"
+                            aria-required="true"
+                            aria-invalid={!!errors.carModel}
                             value={formData.carModel || ''}
                             onChange={handleInputChange}
+                            onBlur={(e) => validateField(e.target.name, e.target.value)}
                             placeholder="Tesla Model 3"
                             className={`w-full bg-white/5 border-2 ${errors.carModel ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
+                          {errors.carModel && <p className="text-apple-red text-xs mt-1 ml-1">{errors.carModel}</p>}
                         </motion.div>
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-caption ml-1">Госномер</label>
+                        <label htmlFor="plateNumber" className="text-caption ml-1">Госномер <span className="text-apple-red">*</span></label>
                         <motion.div
                           animate={errors.plateNumber ? { x: [-4, 4, -4, 4, 0] } : {}}
                           transition={{ duration: 0.4 }}
                         >
                           <input
-                            required
+                            id="plateNumber"
                             name="plateNumber"
                             ref={plateNumberRef}
+                            aria-label="Государственный номер автомобиля"
+                            aria-required="true"
+                            aria-invalid={!!errors.plateNumber}
                             value={formData.plateNumber || ''}
                             onChange={handleInputChange}
+                            onBlur={(e) => validateField(e.target.name, e.target.value)}
                             placeholder="А123ВС 777"
                             className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
+                          {errors.plateNumber && <p className="text-apple-red text-xs mt-1 ml-1">{errors.plateNumber}</p>}
                         </motion.div>
                       </div>
                     </div>
@@ -1300,36 +1311,48 @@ export default function Home() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
                       <div className="space-y-1.5">
+                        <label htmlFor="ownerName" className="text-caption ml-1">Имя владельца <span className="text-apple-red">*</span></label>
                         <motion.div
                           animate={errors.ownerName ? { x: [-4, 4, -4, 4, 0] } : {}}
                           transition={{ duration: 0.4 }}
                         >
                           <input
-                            required
+                            id="ownerName"
                             name="ownerName"
                             ref={ownerNameRef}
+                            aria-label="Имя владельца"
+                            aria-required="true"
+                            aria-invalid={!!errors.ownerName}
                             value={formData.ownerName || ''}
                             onChange={handleInputChange}
+                            onBlur={(e) => validateField(e.target.name, e.target.value)}
                             placeholder="Ваше имя"
                             className={`w-full bg-white/5 border-2 ${errors.ownerName ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
+                          {errors.ownerName && <p className="text-apple-red text-xs mt-1 ml-1">{errors.ownerName}</p>}
                         </motion.div>
                       </div>
                       <div className="space-y-1.5">
+                        <label htmlFor="phone1" className="text-caption ml-1">Телефон <span className="text-apple-red">*</span></label>
                         <motion.div
                           animate={errors.phone1 ? { x: [-4, 4, -4, 4, 0] } : {}}
                           transition={{ duration: 0.4 }}
                         >
                           <input
-                            required
+                            id="phone1"
                             type="tel"
                             name="phone1"
                             ref={phoneInputRef}
+                            aria-label="Номер телефона"
+                            aria-required="true"
+                            aria-invalid={!!errors.phone1}
                             value={formData.phone1 || ''}
                             onChange={handleInputChange}
+                            onBlur={(e) => validateField(e.target.name, e.target.value)}
                             placeholder="Телефон"
                             className={`w-full bg-white/5 border-2 ${errors.phone1 ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
+                          {errors.phone1 && <p className="text-apple-red text-xs mt-1 ml-1">{errors.phone1}</p>}
                         </motion.div>
                       </div>
                     </div>
@@ -1368,6 +1391,7 @@ export default function Home() {
                       <div className="space-y-1.5">
                         <input
                           name="telegram"
+                          aria-label="Telegram имя пользователя"
                           value={formData.telegram || ''}
                           onChange={handleInputChange}
                           placeholder="Telegram (username)"
@@ -1379,6 +1403,7 @@ export default function Home() {
                         <input
                           type="tel"
                           name="whatsapp"
+                          aria-label="WhatsApp номер телефона"
                           value={formData.whatsapp || ''}
                           onChange={handleInputChange}
                           placeholder="WhatsApp (+7...)"
@@ -1600,7 +1625,7 @@ export default function Home() {
               <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
                 Политика конфиденциальности
               </Link>
-              <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
+              <Link href="/privacy#data-processing" className="text-tertiary hover:text-secondary transition-colors">
                 Обработка данных
               </Link>
             </div>
@@ -1721,7 +1746,7 @@ export default function Home() {
                         (formData.selectedFrame === 'label_bottom' || formData.selectedFrame === 'bubble') ? 'bg-black text-white shadow-lg' : 
                         (formData.selectedFrame === 'solid_black' || formData.selectedFrame === 'circle') ? 'bg-white/20 text-white backdrop-blur-sm' : ''
                       }`}>
-                        {formData.qrText || 'SCAN ME'}
+                        {formData.qrText || 'СКАНИРУЙ МЕНЯ'}
                       </div>
                     </div>
                   )}

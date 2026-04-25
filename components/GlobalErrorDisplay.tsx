@@ -13,7 +13,7 @@ export default function GlobalErrorDisplay() {
         <div className="w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-red-500/30">
           <span className="text-2xl">⚠️</span>
         </div>
-        <h2 className="heading-display mb-2">Критическая ошибка</h2>
+        <p className="heading-display mb-2" role="alert">Критическая ошибка</p>
         <p id="global-error-message" className="text-body text-white/60 mb-6"></p>
         <div className="mb-8 p-4 bg-black/40 rounded-xl border border-white/5 text-left overflow-x-auto">
           <p className="text-label text-white/30 mb-2">Technical Details</p>
