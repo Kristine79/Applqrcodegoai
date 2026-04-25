@@ -391,7 +391,7 @@ export default function OrderPage() {
               <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
                 Политика конфиденциальности
               </Link>
-              <Link href="/privacy" className="text-tertiary hover:text-secondary transition-colors">
+              <Link href="/privacy#data-processing" className="text-tertiary hover:text-secondary transition-colors">
                 Обработка данных
               </Link>
             </div>
