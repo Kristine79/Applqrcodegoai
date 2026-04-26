@@ -21,6 +21,7 @@ import {
   Headphones
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { PageSkeleton } from '@/components/Skeleton';
 
 type StickerType = 'standard' | 'premium';
 
@@ -92,7 +93,7 @@ export default function OrderPage() {
     setIsSuccess(true);
   };
 
-  if (!mounted) return null;
+  if (!mounted) return <PageSkeleton />;
 
   if (isSuccess) {
     return (
