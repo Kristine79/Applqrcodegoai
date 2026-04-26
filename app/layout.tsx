@@ -3,6 +3,9 @@ import { Inter, Oswald } from 'next/font/google';
 import './globals.css';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import GlobalErrorDisplay from '@/components/GlobalErrorDisplay';
+import { ToastProvider } from '@/components/Toast';
+import SkipLink from '@/components/SkipLink';
+import ScrollToTop from '@/components/ScrollToTop';
 
 const inter = Inter({ 
   subsets: ['latin', 'cyrillic'],
@@ -108,11 +111,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-sans bg-black text-white selection:bg-apple-red selection:text-white" suppressHydrationWarning>
+        <SkipLink />
         <GlobalErrorDisplay />
 
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
+        <ToastProvider>
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
+          <ScrollToTop />
+        </ToastProvider>
       </body>
     </html>
   );

@@ -8,6 +8,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { encodeCardData, type CarCardData } from '@/lib/utils';
 import { QRCodeSVG } from 'qrcode.react';
+import { useToast } from '@/components/Toast';
+import { PageSkeleton } from '@/components/Skeleton';
 
 const BUTTON_OPTIONS = [
   { id: 'evacuation', label: 'Эвакуация', icon: AlertTriangle, color: 'bg-orange-500', hint: 'Сообщить о риске эвакуации' },
@@ -31,6 +33,7 @@ const FRAME_OPTIONS = [
 
 export default function Home() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [formData, setFormData] = useState<CarCardData>({
     carModel: '',
     plateNumber: '',
@@ -175,9 +178,9 @@ export default function Home() {
   }, [formData, mounted]);
 
   const saveCardToProfile = () => {
-    // Check if card already exists
     const exists = savedCards.some(c => c.plateNumber === formData.plateNumber && c.carModel === formData.carModel);
     if (exists) {
+      showToast('Визитка уже сохранена', 'info');
       router.push('/cabinet');
       return;
     }
@@ -186,6 +189,7 @@ export default function Home() {
     setSavedCards(newSaved);
     localStorage.setItem(SAVED_CARDS_KEY, JSON.stringify(newSaved));
     triggerVibration(50);
+    showToast('Визитка сохранена', 'success');
     router.push('/cabinet');
   };
 
@@ -208,6 +212,7 @@ export default function Home() {
     });
     localStorage.removeItem(STORAGE_KEY);
     triggerVibration(20);
+    showToast('Черновик очищен', 'info');
   };
 
   const validateField = useCallback((name: string, value: string) => {
@@ -322,7 +327,8 @@ export default function Home() {
     setGeneratedUrl(url);
     setIsGenerating(false);
     setIsSuccess(true);
-    
+    showToast('QR-код успешно создан!', 'success');
+
     // Auto-save to profile if not already there
     const exists = savedCards.some(c => c.plateNumber === formData.plateNumber && c.carModel === formData.carModel);
     if (!exists) {
@@ -366,9 +372,10 @@ export default function Home() {
     try {
       await navigator.clipboard.writeText(text);
       triggerVibration(50);
-      // Optional: show a toast or temporary success state
+      showToast('Скопировано в буфер обмена', 'success');
     } catch (err) {
       console.error('Failed to copy text: ', err);
+      showToast('Не удалось скопировать', 'error');
     }
   };
 
@@ -388,9 +395,7 @@ export default function Home() {
         }
       }
     } else {
-      // Fallback for browsers that don't support navigator.share
       copyToClipboard(appUrl);
-      alert('Ссылка на приложение скопирована в буфер обмена');
     }
   };
 
@@ -978,7 +983,7 @@ export default function Home() {
     img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
   };
 
-  if (!mounted) return null;
+  if (!mounted) return <PageSkeleton />;
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white selection:bg-apple-red selection:text-white transition-colors duration-300" suppressHydrationWarning>
@@ -1039,7 +1044,7 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-xl mx-auto p-2 space-y-3">
+      <main id="main-content" className="max-w-xl mx-auto p-2 space-y-3">
         {/* PWA Install Banner */}
         <AnimatePresence>
           {(deferredPrompt || (isIOS && showInstallBanner)) && (
@@ -1252,7 +1257,7 @@ export default function Home() {
                             placeholder="Tesla Model 3"
                             className={`w-full bg-white/5 border-2 ${errors.carModel ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
-                          {errors.carModel && <p className="text-apple-red text-xs mt-1 ml-1">{errors.carModel}</p>}
+                          {errors.carModel && <p className="text-apple-red text-xs mt-1 ml-1" role="alert" aria-live="polite">{errors.carModel}</p>}
                         </motion.div>
                       </div>
                       <div className="space-y-1.5">
@@ -1274,7 +1279,7 @@ export default function Home() {
                             placeholder="А123ВС 777"
                             className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
-                          {errors.plateNumber && <p className="text-apple-red text-xs mt-1 ml-1">{errors.plateNumber}</p>}
+                          {errors.plateNumber && <p className="text-apple-red text-xs mt-1 ml-1" role="alert" aria-live="polite">{errors.plateNumber}</p>}
                         </motion.div>
                       </div>
                     </div>
@@ -1329,7 +1334,7 @@ export default function Home() {
                             placeholder="Ваше имя"
                             className={`w-full bg-white/5 border-2 ${errors.ownerName ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
-                          {errors.ownerName && <p className="text-apple-red text-xs mt-1 ml-1">{errors.ownerName}</p>}
+                          {errors.ownerName && <p className="text-apple-red text-xs mt-1 ml-1" role="alert" aria-live="polite">{errors.ownerName}</p>}
                         </motion.div>
                       </div>
                       <div className="space-y-1.5">
@@ -1352,7 +1357,7 @@ export default function Home() {
                             placeholder="Телефон"
                             className={`w-full bg-white/5 border-2 ${errors.phone1 ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
                           />
-                          {errors.phone1 && <p className="text-apple-red text-xs mt-1 ml-1">{errors.phone1}</p>}
+                          {errors.phone1 && <p className="text-apple-red text-xs mt-1 ml-1" role="alert" aria-live="polite">{errors.phone1}</p>}
                         </motion.div>
                       </div>
                     </div>
@@ -1516,7 +1521,12 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-caption ml-1">Текст рядом с QR</label>
+                        <div className="flex items-center justify-between">
+                          <label className="text-caption ml-1">Текст рядом с QR</label>
+                          <span className={`char-counter mr-1 ${(formData.qrText || '').length >= 30 ? (formData.qrText || '').length >= 35 ? 'char-counter-limit' : 'char-counter-warn' : ''}`}>
+                            {(formData.qrText || '').length}/35
+                          </span>
+                        </div>
                         <div className="relative">
                           <Type className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-tertiary" />
                           <input
@@ -1561,7 +1571,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={isGenerating}
-              className={`w-full py-4 px-6 rounded-xl font-bold text-lg uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl ${
+              className={`glass-button w-full py-4 px-6 rounded-xl font-bold text-lg uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black ${
                 isSuccess 
                   ? 'bg-green-500 text-white' 
                   : 'bg-apple-red text-white red-glow hover:brightness-110'
@@ -1591,7 +1601,7 @@ export default function Home() {
             </button>
 
             {errors.general && (
-              <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 text-base font-medium">
+              <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 text-base font-medium" role="alert" aria-live="assertive">
                 <AlertTriangle className="w-5 h-5 flex-shrink-0" />
                 {errors.general}
               </div>

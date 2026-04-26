@@ -15,14 +15,17 @@ import {
   Package
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { PageSkeleton } from '@/components/Skeleton';
 import { useRouter } from 'next/navigation';
 import { QRCodeSVG } from 'qrcode.react';
 import { type CarCardData, encodeCardData } from '@/lib/utils';
+import { useToast } from '@/components/Toast';
 
 const SAVED_CARDS_KEY = 'carqr_saved_cards';
 
 export default function CabinetPage() {
   const router = useRouter();
+  const { showToast } = useToast();
   const [savedCards, setSavedCards] = useState<CarCardData[]>([]);
   const [mounted, setMounted] = useState(false);
   const [selectedCard, setSelectedCard] = useState<CarCardData | null>(null);
@@ -59,6 +62,7 @@ export default function CabinetPage() {
     setSavedCards(newCards);
     localStorage.setItem(SAVED_CARDS_KEY, JSON.stringify(newCards));
     setSelectedCard(null);
+    showToast('Визитка удалена', 'info');
   };
 
   const editCard = (card: CarCardData) => {
@@ -80,7 +84,7 @@ export default function CabinetPage() {
     // ... logic removed ...
   };
 
-  if (!mounted) return null;
+  if (!mounted) return <PageSkeleton />;
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white selection:bg-apple-red selection:text-white p-3 md:p-4">
