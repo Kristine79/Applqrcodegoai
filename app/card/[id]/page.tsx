@@ -191,7 +191,7 @@ export default function PublicCardView() {
 
       <main className="max-w-md mx-auto px-5 -mt-6 space-y-5 relative z-20">
         {/* Quick Actions */}
-        {card.quickButtons.length > 0 && (
+        {card.quickButtons && card.quickButtons.length > 0 && (
           <section className="grid grid-cols-2 gap-2.5">
             {card.quickButtons.map((btnId) => {
               const config = BUTTON_CONFIG[btnId];

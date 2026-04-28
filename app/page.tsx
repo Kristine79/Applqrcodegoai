@@ -3,11 +3,34 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, ShieldCheck, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package, ChevronLeft, ChevronRight, Zap } from 'lucide-react';
+import { Car, QrCode, Download, Send, Phone, User, Mail, MessageSquare, AlertTriangle, ShieldAlert, ShieldCheck, Info, ChevronDown, ChevronUp, Check, Loader2, HelpCircle, Palette, Image as ImageIcon, Type, Plus, Trash2, BarChart3, DownloadCloud, Package, ChevronLeft, ChevronRight, Zap, Upload, Edit3 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import { encodeCardData, type CarCardData } from '@/lib/utils';
 import { QRCodeSVG } from 'qrcode.react';
+import { toast } from 'sonner';
+import { ResetOnboarding } from '@/components/ui/onboarding';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+
+// shadcn/ui glassmorphism components
+import {
+  GlassCard,
+  GlassCardHeader,
+  GlassCardTitle,
+  GlassCardDescription,
+  GlassCardContent,
+  GlassCardFooter,
+} from '@/components/ui/glass-card';
+import { GlassButton } from '@/components/ui/glass-button';
+import { GlassInput } from '@/components/ui/glass-input';
+import { GlassTextarea } from '@/components/ui/glass-textarea';
+import { GlassSelect, GlassSelectItem } from '@/components/ui/glass-select';
+import { GlassSwitch } from '@/components/ui/glass-switch';
+import { FormSection } from '@/components/ui/form-section';
+import { QRDisplay } from '@/components/ui/qr-display';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const BUTTON_OPTIONS = [
   { id: 'evacuation', label: 'Эвакуация', icon: AlertTriangle, color: 'bg-orange-500', hint: 'Сообщить о риске эвакуации' },
@@ -265,12 +288,15 @@ export default function Home() {
 
   const toggleButton = (id: string) => {
     triggerVibration(10);
-    setFormData(prev => ({
-      ...prev,
-      quickButtons: prev.quickButtons.includes(id)
-        ? prev.quickButtons.filter(b => b !== id)
-        : [...prev.quickButtons, id]
-    }));
+    setFormData(prev => {
+      const currentButtons = prev.quickButtons || [];
+      return {
+        ...prev,
+        quickButtons: currentButtons.includes(id)
+          ? currentButtons.filter(b => b !== id)
+          : [...currentButtons, id]
+      };
+    });
   };
 
   const generateQR = async (e: React.FormEvent) => {
@@ -359,6 +385,9 @@ export default function Home() {
     setTimeout(() => {
       setShowQR(true);
       setIsSuccess(false);
+      toast.success("QR-код создан!", {
+        description: "Визитка сохранена в вашем кабинете",
+      });
     }, 500);
   };
 
@@ -366,9 +395,12 @@ export default function Home() {
     try {
       await navigator.clipboard.writeText(text);
       triggerVibration(50);
-      // Optional: show a toast or temporary success state
+      toast.success("Скопировано!", {
+        description: "Ссылка скопирована в буфер обмена",
+      });
     } catch (err) {
       console.error('Failed to copy text: ', err);
+      toast.error("Ошибка копирования");
     }
   };
 
@@ -1014,6 +1046,7 @@ export default function Home() {
           </span>
         </Link>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Link
             href="/cabinet"
             className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all relative"
@@ -1028,13 +1061,16 @@ export default function Home() {
           </Link>
 
           {deferredPrompt && (
-            <button
+            <GlassButton
               onClick={installPWA}
-              className="px-3 h-9 rounded-full bg-apple-red text-white text-sm font-medium flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all"
+              variant="default"
+              size="sm"
+              glow
+              className="h-9"
             >
-              <DownloadCloud className="w-4 h-4" />
+              <DownloadCloud className="w-4 h-4 mr-1" />
               <span className="hidden sm:inline">Установить</span>
-            </button>
+            </GlassButton>
           )}
         </div>
       </header>
@@ -1067,12 +1103,14 @@ export default function Home() {
                   >
                     <Plus className="w-4 h-4 rotate-45" />
                   </button>
-                  <button
+                  <GlassButton
                     onClick={handleInstallClick}
-                    className="px-4 py-2 rounded-full bg-apple-red text-white text-xs font-bold shadow-lg hover:scale-105 active:scale-95 transition-all"
+                    variant="default"
+                    size="sm"
+                    glow
                   >
                     Установить
-                  </button>
+                  </GlassButton>
                 </div>
               </div>
             </motion.div>
@@ -1151,15 +1189,34 @@ export default function Home() {
           </div>
         )}
 
-        <div className="glass-card pt-3 pb-4 px-4 md:pt-4 md:pb-5 md:px-5 relative overflow-hidden">
+        <GlassCard className="relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-apple-red/10 rounded-full -mr-16 -mt-16 blur-3xl"></div>
-          
-          <div className="flex flex-col items-center text-center gap-1 mb-3 relative z-10">
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="flex flex-col items-center text-center gap-1 mb-3 relative z-10"
+          >
             <div>
-              <h1 className="heading-section">СОЗДАТЬ QR ВИЗИТКУ</h1>
-              <p className="text-secondary text-sm">Безопасное шифрование данных</p>
+              <motion.h1
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="heading-section"
+              >
+                СОЗДАТЬ QR ВИЗИТКУ
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-secondary text-sm"
+              >
+                Безопасное шифрование данных
+              </motion.p>
             </div>
-          </div>
+          </motion.div>
 
           {/* Instruction Section */}
           <div className="mb-4 border-b border-white/10 pb-3">
@@ -1233,50 +1290,40 @@ export default function Home() {
                     className="overflow-hidden"
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                      <div className="space-y-1.5">
-                        <label htmlFor="carModel" className="text-caption ml-1">Марка и модель <span className="text-apple-red">*</span></label>
-                        <motion.div
-                          animate={errors.carModel ? { x: [-4, 4, -4, 4, 0] } : {}}
-                          transition={{ duration: 0.4 }}
-                        >
-                          <input
-                            id="carModel"
-                            name="carModel"
-                            ref={carModelRef}
-                            aria-label="Марка и модель автомобиля"
-                            aria-required="true"
-                            aria-invalid={!!errors.carModel}
-                            value={formData.carModel || ''}
-                            onChange={handleInputChange}
-                            onBlur={(e) => validateField(e.target.name, e.target.value)}
-                            placeholder="Tesla Model 3"
-                            className={`w-full bg-white/5 border-2 ${errors.carModel ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
-                          />
-                          {errors.carModel && <p className="text-apple-red text-xs mt-1 ml-1">{errors.carModel}</p>}
-                        </motion.div>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label htmlFor="plateNumber" className="text-caption ml-1">Госномер <span className="text-apple-red">*</span></label>
-                        <motion.div
-                          animate={errors.plateNumber ? { x: [-4, 4, -4, 4, 0] } : {}}
-                          transition={{ duration: 0.4 }}
-                        >
-                          <input
-                            id="plateNumber"
-                            name="plateNumber"
-                            ref={plateNumberRef}
-                            aria-label="Государственный номер автомобиля"
-                            aria-required="true"
-                            aria-invalid={!!errors.plateNumber}
-                            value={formData.plateNumber || ''}
-                            onChange={handleInputChange}
-                            onBlur={(e) => validateField(e.target.name, e.target.value)}
-                            placeholder="А123ВС 777"
-                            className={`w-full bg-white/5 border-2 ${errors.plateNumber ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
-                          />
-                          {errors.plateNumber && <p className="text-apple-red text-xs mt-1 ml-1">{errors.plateNumber}</p>}
-                        </motion.div>
-                      </div>
+                      <motion.div
+                        animate={errors.carModel ? { x: [-4, 4, -4, 4, 0] } : {}}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <GlassInput
+                          id="carModel"
+                          name="carModel"
+                          ref={carModelRef}
+                          label="Марка и модель *"
+                          icon={Car}
+                          value={formData.carModel || ''}
+                          onChange={handleInputChange}
+                          onBlur={(e) => validateField(e.target.name, e.target.value)}
+                          placeholder="Tesla Model 3"
+                          error={errors.carModel}
+                        />
+                      </motion.div>
+                      <motion.div
+                        animate={errors.plateNumber ? { x: [-4, 4, -4, 4, 0] } : {}}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <GlassInput
+                          id="plateNumber"
+                          name="plateNumber"
+                          ref={plateNumberRef}
+                          label="Госномер *"
+                          icon={ShieldCheck}
+                          value={formData.plateNumber || ''}
+                          onChange={handleInputChange}
+                          onBlur={(e) => validateField(e.target.name, e.target.value)}
+                          placeholder="А123ВС 777"
+                          error={errors.plateNumber}
+                        />
+                      </motion.div>
                     </div>
                   </motion.div>
                 )}
@@ -1310,51 +1357,41 @@ export default function Home() {
                     className="overflow-hidden"
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
-                      <div className="space-y-1.5">
-                        <label htmlFor="ownerName" className="text-caption ml-1">Имя владельца <span className="text-apple-red">*</span></label>
-                        <motion.div
-                          animate={errors.ownerName ? { x: [-4, 4, -4, 4, 0] } : {}}
-                          transition={{ duration: 0.4 }}
-                        >
-                          <input
-                            id="ownerName"
-                            name="ownerName"
-                            ref={ownerNameRef}
-                            aria-label="Имя владельца"
-                            aria-required="true"
-                            aria-invalid={!!errors.ownerName}
-                            value={formData.ownerName || ''}
-                            onChange={handleInputChange}
-                            onBlur={(e) => validateField(e.target.name, e.target.value)}
-                            placeholder="Ваше имя"
-                            className={`w-full bg-white/5 border-2 ${errors.ownerName ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
-                          />
-                          {errors.ownerName && <p className="text-apple-red text-xs mt-1 ml-1">{errors.ownerName}</p>}
-                        </motion.div>
-                      </div>
-                      <div className="space-y-1.5">
-                        <label htmlFor="phone1" className="text-caption ml-1">Телефон <span className="text-apple-red">*</span></label>
-                        <motion.div
-                          animate={errors.phone1 ? { x: [-4, 4, -4, 4, 0] } : {}}
-                          transition={{ duration: 0.4 }}
-                        >
-                          <input
-                            id="phone1"
-                            type="tel"
-                            name="phone1"
-                            ref={phoneInputRef}
-                            aria-label="Номер телефона"
-                            aria-required="true"
-                            aria-invalid={!!errors.phone1}
-                            value={formData.phone1 || ''}
-                            onChange={handleInputChange}
-                            onBlur={(e) => validateField(e.target.name, e.target.value)}
-                            placeholder="Телефон"
-                            className={`w-full bg-white/5 border-2 ${errors.phone1 ? 'border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.2)]' : 'border-white/5 hover:border-white/10'} rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30`}
-                          />
-                          {errors.phone1 && <p className="text-apple-red text-xs mt-1 ml-1">{errors.phone1}</p>}
-                        </motion.div>
-                      </div>
+                      <motion.div
+                        animate={errors.ownerName ? { x: [-4, 4, -4, 4, 0] } : {}}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <GlassInput
+                          id="ownerName"
+                          name="ownerName"
+                          ref={ownerNameRef}
+                          label="Имя владельца *"
+                          icon={User}
+                          value={formData.ownerName || ''}
+                          onChange={handleInputChange}
+                          onBlur={(e) => validateField(e.target.name, e.target.value)}
+                          placeholder="Ваше имя"
+                          error={errors.ownerName}
+                        />
+                      </motion.div>
+                      <motion.div
+                        animate={errors.phone1 ? { x: [-4, 4, -4, 4, 0] } : {}}
+                        transition={{ duration: 0.4 }}
+                      >
+                        <GlassInput
+                          id="phone1"
+                          name="phone1"
+                          ref={phoneInputRef}
+                          type="tel"
+                          label="Телефон *"
+                          icon={Phone}
+                          value={formData.phone1 || ''}
+                          onChange={handleInputChange}
+                          onBlur={(e) => validateField(e.target.name, e.target.value)}
+                          placeholder="+7 (999) 123-45-67"
+                          error={errors.phone1}
+                        />
+                      </motion.div>
                     </div>
                   </motion.div>
                 )}
@@ -1444,7 +1481,7 @@ export default function Home() {
                   >
                     <div className="grid grid-cols-2 gap-2 pt-1">
                       {BUTTON_OPTIONS.map((btn) => {
-                        const isActive = formData.quickButtons.includes(btn.id);
+                        const isActive = (formData.quickButtons || []).includes(btn.id);
                         return (
                           <button
                             key={btn.id}
@@ -1558,14 +1595,13 @@ export default function Home() {
               </AnimatePresence>
             </div>
 
-            <button
+            <GlassButton
               type="submit"
               disabled={isGenerating}
-              className={`w-full py-4 px-6 rounded-xl font-bold text-lg uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl ${
-                isSuccess 
-                  ? 'bg-green-500 text-white' 
-                  : 'bg-apple-red text-white red-glow hover:brightness-110'
-              }`}
+              variant={isSuccess ? "accent" : "default"}
+              size="lg"
+              glow={!isSuccess}
+              className="w-full h-14 text-lg uppercase tracking-widest"
             >
               {isGenerating ? (
                 <>
@@ -1588,7 +1624,7 @@ export default function Home() {
                   СОЗДАТЬ QR-КОД
                 </>
               )}
-            </button>
+            </GlassButton>
 
             {errors.general && (
               <div className="mt-4 p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3 text-red-500 text-base font-medium">
@@ -1597,7 +1633,7 @@ export default function Home() {
               </div>
             )}
           </form>
-        </div>
+        </GlassCard>
 
         <footer className="mt-12 mb-8 text-center space-y-6 relative z-10 px-4">
           <div className="flex flex-col items-center gap-4">
@@ -1628,6 +1664,7 @@ export default function Home() {
               <Link href="/privacy#data-processing" className="text-tertiary hover:text-secondary transition-colors">
                 Обработка данных
               </Link>
+              <ResetOnboarding />
             </div>
           </div>
         </footer>

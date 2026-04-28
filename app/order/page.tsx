@@ -61,7 +61,7 @@ export default function OrderPage() {
   }, []);
 
   const calculatePrice = () => {
-    let basePrice = formData.type === 'standard' ? 250 : 450;
+    let basePrice = formData.type === 'standard' ? 700 : 1500;
     // Size multiplier (10cm is base, each cm adds 10%)
     const sizeMultiplier = 1 + (formData.size - 10) * 0.1;
     let total = basePrice * sizeMultiplier;
@@ -185,7 +185,7 @@ export default function OrderPage() {
                 </div>
                 <div>
                   <div className="heading-card">Премиум</div>
-                  <p className="text-sm text-secondary mt-1">Статическая пленка, клеится изнутри салона. УФ-защита, не оставляет следов клея.</p>
+                  <p className="text-sm text-white/70 mt-1">Статическая пленка, клеится изнутри салона. УФ-защита, не оставляет следов клея.</p>
                 </div>
                 {formData.type === 'premium' && <Check className="w-5 h-5 text-apple-red ml-auto shrink-0" />}
               </button>
@@ -235,7 +235,7 @@ export default function OrderPage() {
                 </div>
                 <div className="flex-1">
                   <div className="heading-card group-hover:text-apple-red transition-colors">Срочное производство</div>
-                  <p className="text-[10px] uppercase tracking-wider font-bold text-secondary">+30% к стоимости, готовность за 24 часа</p>
+                  <p className="text-[10px] uppercase tracking-wider font-bold text-white/60">+30% к стоимости, готовность за 24 часа</p>
                 </div>
               </label>
             </div>
@@ -245,7 +245,7 @@ export default function OrderPage() {
           <section className="space-y-4">
             <div className="flex items-center gap-2 ml-1">
               <Truck className="w-4 h-4 text-apple-red" />
-              <h2 className="text-caption text-secondary">Доставка и адрес</h2>
+              <h2 className="text-caption text-white/70">Доставка и адрес</h2>
             </div>
             
             <div className="glass-card p-5 space-y-4">
@@ -342,7 +342,7 @@ export default function OrderPage() {
           <section className="sticky bottom-4 left-0 right-0 z-40">
             <div className="glass-panel p-5 shadow-2xl border border-white/10 flex items-center justify-between">
               <div>
-                <p className="text-[10px] uppercase tracking-wider font-bold text-secondary">Итого к оплате</p>
+                <p className="text-[10px] uppercase tracking-wider font-bold text-white/70">Итого к оплате</p>
                 <p className="text-2xl font-black text-primary">{calculatePrice()} ₽</p>
               </div>
               <button
@@ -364,7 +364,7 @@ export default function OrderPage() {
 
         <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/5">
           <Info className="w-5 h-5 text-tertiary shrink-0" />
-          <p className="text-sm text-secondary leading-relaxed">
+          <p className="text-sm text-white/70 leading-relaxed">
             После оплаты мы сгенерируем макет вашей наклейки на основе данных из вашего профиля и отправим в производство. Доставка осуществляется Почтой России или СДЭК.
           </p>
         </div>

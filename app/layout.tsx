@@ -1,13 +1,15 @@
 import type { Metadata } from 'next';
-import { Inter, Oswald } from 'next/font/google';
+import { Inter, Oswald, Geist } from 'next/font/google';
 import './globals.css';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import GlobalErrorDisplay from '@/components/GlobalErrorDisplay';
+import ResizeObserverSuppressor from '@/components/ResizeObserverSuppressor';
+import { cn } from "@/lib/utils";
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from '@/components/ui/sonner';
+import { Onboarding } from '@/components/ui/onboarding';
 
-const inter = Inter({ 
-  subsets: ['latin', 'cyrillic'],
-  variable: '--font-sans',
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const oswald = Oswald({
   weight: ['400', '500', '600', '700'],
@@ -41,7 +43,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${inter.variable} ${oswald.variable} dark`} suppressHydrationWarning>
+    <html lang="ru" className={cn("dark", oswald.variable, "font-sans", geist.variable)} suppressHydrationWarning>
       <head>
         <script
           type="application/ld+json"
@@ -107,11 +109,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="font-sans bg-black text-white selection:bg-apple-red selection:text-white" suppressHydrationWarning>
+      <body className="font-sans bg-[oklch(12%_0.01_250)] text-white selection:bg-apple-red selection:text-white" suppressHydrationWarning>
+        <ResizeObserverSuppressor />
         <GlobalErrorDisplay />
 
         <ErrorBoundary>
-          {children}
+          <TooltipProvider>
+            <Onboarding />
+            {children}
+            <Toaster position="top-center" richColors />
+          </TooltipProvider>
         </ErrorBoundary>
       </body>
     </html>
