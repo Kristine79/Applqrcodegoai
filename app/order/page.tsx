@@ -18,11 +18,13 @@ import {
   Info,
   ChevronRight,
   Package,
-  Headphones
+  Headphones,
+  MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 type StickerType = 'standard' | 'premium';
+type DeliveryMethod = 'mail' | 'courier';
 
 interface OrderFormData {
   type: StickerType;
@@ -35,6 +37,8 @@ interface OrderFormData {
   city: string;
   street: string;
   house: string;
+  deliveryMethod: DeliveryMethod;
+  comment: string;
 }
 
 export default function OrderPage() {
@@ -50,6 +54,8 @@ export default function OrderPage() {
     city: '',
     street: '',
     house: '',
+    deliveryMethod: 'mail',
+    comment: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -70,10 +76,15 @@ export default function OrderPage() {
       total *= 1.3;
     }
     
+    // Add delivery cost
+    if (formData.deliveryMethod === 'courier') {
+      total += 300;
+    }
+    
     return Math.round(total);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
     setFormData(prev => ({
       ...prev,
@@ -105,7 +116,7 @@ export default function OrderPage() {
           <Check className="w-10 h-10 text-green-500" />
         </motion.div>
         <h1 className="heading-display mb-2">Заказ принят!</h1>
-        <p className="text-sm text-secondary max-w-xs mb-8">
+        <p className="text-sm text-white/90 max-w-xs mb-8 font-medium">
           Мы свяжемся с вами в ближайшее время для подтверждения деталей оплаты и доставки.
         </p>
         <Link 
@@ -144,13 +155,13 @@ export default function OrderPage() {
       <main className="max-w-xl mx-auto p-4 space-y-6">
         <div className="space-y-2">
           <h1 className="heading-display">ЗАКАЗАТЬ НАКЛЕЙКУ</h1>
-          <p className="text-sm text-secondary">Профессиональная печать вашего QR-кода</p>
+          <p className="text-sm text-white/70">Профессиональная печать вашего QR-кода</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Sticker Type */}
           <section className="space-y-3">
-            <h2 className="text-caption text-secondary ml-1">Тип наклейки</h2>
+            <h2 className="text-caption text-white/70 ml-1">Тип наклейки</h2>
             <div className="grid grid-cols-1 gap-3">
               <button
                 type="button"
@@ -166,7 +177,7 @@ export default function OrderPage() {
                 </div>
                 <div>
                   <div className="heading-card">Стандартная</div>
-                  <p className="text-sm text-secondary mt-1">Виниловая пленка, клей снаружи. Классический вариант для кузова или стекла.</p>
+                  <p className="text-sm text-white/70 mt-1">Виниловая пленка, клей снаружи. Классический вариант для кузова или стекла.</p>
                 </div>
                 {formData.type === 'standard' && <Check className="w-5 h-5 text-apple-red ml-auto shrink-0" />}
               </button>
@@ -244,10 +255,10 @@ export default function OrderPage() {
           {/* Delivery Form */}
           <section className="space-y-4">
             <div className="flex items-center gap-2 ml-1">
-              <Truck className="w-4 h-4 text-apple-red" />
-              <h2 className="text-caption text-white/70">Доставка и адрес</h2>
+              <MapPin className="w-4 h-4 text-apple-red" />
+              <h2 className="text-caption text-white/70">Адрес доставки</h2>
             </div>
-            
+
             <div className="glass-card p-5 space-y-4">
               <div className="space-y-4">
                 <div className="relative">
@@ -292,11 +303,10 @@ export default function OrderPage() {
                 <div className="grid grid-cols-3 gap-3">
                   <div className="col-span-1">
                     <input
-                      required
                       name="index"
                       value={formData.index}
                       onChange={handleInputChange}
-                      placeholder="Индекс"
+                      placeholder="Индекс (необязательно)"
                       className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-primary focus:border-apple-red transition-all outline-none placeholder:text-tertiary"
                     />
                   </div>
@@ -336,6 +346,87 @@ export default function OrderPage() {
                 </div>
               </div>
             </div>
+
+            {/* Delivery Method Selection */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 ml-1">
+                <Truck className="w-4 h-4 text-apple-red" />
+                <h2 className="text-caption text-white/70">Способ доставки</h2>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: 'mail' }))}
+                  className={`flex flex-col items-start gap-2 p-4 rounded-2xl border-2 transition-all text-left ${
+                    formData.deliveryMethod === 'mail'
+                      ? 'bg-apple-red/10 border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.1)]'
+                      : 'bg-white/5 border-white/5 hover:border-white/10'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="heading-card">Почта России</div>
+                    {formData.deliveryMethod === 'mail' && <Check className="w-5 h-5 text-apple-red shrink-0" />}
+                  </div>
+                  <p className="text-sm text-white/60">Бесплатно, 7-14 дней</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: 'courier' }))}
+                  className={`flex flex-col items-start gap-2 p-4 rounded-2xl border-2 transition-all text-left ${
+                    formData.deliveryMethod === 'courier'
+                      ? 'bg-apple-red/10 border-apple-red shadow-[0_0_20px_rgba(255,59,48,0.1)]'
+                      : 'bg-white/5 border-white/5 hover:border-white/10'
+                  }`}
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <div className="heading-card">Курьер</div>
+                    {formData.deliveryMethod === 'courier' && <Check className="w-5 h-5 text-apple-red shrink-0" />}
+                  </div>
+                  <p className="text-sm text-white/60">+300 ₽, 1-3 дня</p>
+                </button>
+              </div>
+            </div>
+
+            {/* Comment Field */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 ml-1">
+                <MessageSquare className="w-4 h-4 text-apple-red" />
+                <h2 className="text-caption text-white/70">Комментарий к заказу</h2>
+              </div>
+              <textarea
+                name="comment"
+                value={formData.comment}
+                onChange={handleInputChange}
+                placeholder="Укажите пожелания к заказу (необязательно)"
+                rows={3}
+                className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-primary focus:border-apple-red transition-all outline-none placeholder:text-tertiary resize-none"
+              />
+            </div>
+          </section>
+
+          {/* Urgent Production */}
+          <section className="glass-card p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <Zap className="w-4 h-4 text-apple-red" />
+              <h2 className="heading-card">Срочное производство</h2>
+            </div>
+            <label className="flex items-center gap-4 p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-white/10 transition-all cursor-pointer group">
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  name="isUrgent"
+                  checked={formData.isUrgent}
+                  onChange={handleInputChange}
+                  className="sr-only"
+                />
+                <div className={`w-10 h-6 rounded-full transition-colors ${formData.isUrgent ? 'bg-apple-red' : 'bg-white/10'}`}></div>
+                <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${formData.isUrgent ? 'translate-x-4' : ''}`}></div>
+              </div>
+              <div className="flex-1">
+                <div className="heading-card group-hover:text-apple-red transition-colors">Срочное производство</div>
+                <p className="text-[10px] uppercase tracking-wider font-bold text-white/60">+30% к стоимости, готовность за 24 часа</p>
+              </div>
+            </label>
           </section>
 
           {/* Summary and Checkout */}

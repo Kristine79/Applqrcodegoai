@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Oswald, Geist } from 'next/font/google';
+import { Oswald, Geist } from 'next/font/google';
 import './globals.css';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import GlobalErrorDisplay from '@/components/GlobalErrorDisplay';
@@ -109,7 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="font-sans bg-[oklch(12%_0.01_250)] text-white selection:bg-apple-red selection:text-white" suppressHydrationWarning>
+      <body className="font-sans selection:bg-apple-red" suppressHydrationWarning>
         <ResizeObserverSuppressor />
         <GlobalErrorDisplay />
 

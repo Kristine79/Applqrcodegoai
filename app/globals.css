@@ -10,6 +10,15 @@
   --color-apple-red: #ff3b30;
   --color-apple-red-dark: #8b0000;
 
+  /* Default theme variables (dark by default) */
+  --bg-color: oklch(12% 0.01 250);
+  --text-color: #ffffff;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-card-bg: rgba(255, 255, 255, 0.03);
+  --glass-card-border: rgba(255, 255, 255, 0.05);
+  --accent-glow: rgba(255, 59, 48, 0.15);
+
   --font-heading: var(--font-oswald);
 
   --animate-gradient-x: gradient-x 3s ease infinite;
@@ -33,11 +42,20 @@
   --glass-card-bg: rgba(255, 255, 255, 0.03);
   --glass-card-border: rgba(255, 255, 255, 0.05);
   --accent-glow: rgba(255, 59, 48, 0.15);
+  --field-bg: rgba(255, 255, 255, 0.05);
+  --field-border: rgba(255, 255, 255, 0.05);
+  --field-border-hover: rgba(255, 255, 255, 0.1);
+  --field-placeholder: rgba(255, 255, 255, 0.3);
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --section-border: rgba(255, 255, 255, 0.1);
+  --icon-bg: rgba(255, 255, 255, 0.05);
+  --icon-bg-hover: rgba(255, 255, 255, 0.1);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.985 0 0);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
@@ -75,6 +93,14 @@
   --glass-card-bg: rgba(255, 255, 255, 0.03);
   --glass-card-border: rgba(255, 255, 255, 0.05);
   --accent-glow: rgba(255, 59, 48, 0.15);
+  --field-bg: rgba(255, 255, 255, 0.05);
+  --field-border: rgba(255, 255, 255, 0.05);
+  --field-border-hover: rgba(255, 255, 255, 0.1);
+  --field-placeholder: rgba(255, 255, 255, 0.3);
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  --section-border: rgba(255, 255, 255, 0.1);
+  --icon-bg: rgba(255, 255, 255, 0.05);
+  --icon-bg-hover: rgba(255, 255, 255, 0.1);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -108,47 +134,6 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-.light {
-  --bg-color: oklch(98% 0.01 250);
-  --text-color: oklch(25% 0.01 250);
-  --glass-bg: rgba(0, 0, 0, 0.03);
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --glass-card-bg: rgba(255, 255, 255, 0.7);
-  --glass-card-border: rgba(0, 0, 0, 0.1);
-  --accent-glow: rgba(255, 59, 48, 0.2);
-  --background: oklch(0.985 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.9 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
 @layer base {
   body {
     @apply antialiased transition-colors duration-300 font-sans bg-background text-foreground;
@@ -161,46 +146,57 @@
   }
 
   /* Base Typography — Semantic HTML */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--text-color);
+  }
   h1 {
-    @apply font-heading font-semibold text-[2rem] leading-[1.1] tracking-tight text-white;
+    @apply font-heading font-semibold text-[2rem] leading-[1.1] tracking-tight;
   }
   h2 {
-    @apply font-heading font-medium text-[1.5rem] leading-[1.2] tracking-tight text-white;
+    @apply font-heading font-medium text-[1.5rem] leading-[1.2] tracking-tight;
   }
   h3 {
-    @apply font-heading font-medium text-[1.25rem] leading-[1.25] tracking-tight text-white;
+    @apply font-heading font-medium text-[1.25rem] leading-[1.25] tracking-tight;
   }
   h4 {
-    @apply font-heading font-medium text-[1.125rem] leading-[1.3] tracking-tight text-white;
+    @apply font-heading font-medium text-[1.125rem] leading-[1.3] tracking-tight;
   }
   h5, h6 {
-    @apply font-heading font-semibold text-base leading-[1.4] tracking-tight text-white;
+    @apply font-heading font-semibold text-base leading-[1.4] tracking-tight;
   }
 
   /* Paragraph defaults */
   p {
-    @apply leading-[1.6] text-white/90;
+    @apply leading-[1.6];
+    color: var(--text-color);
+    opacity: 0.9;
     max-width: 65ch;
   }
 
   /* Input typography */
   input, textarea {
-    @apply font-heading text-white;
+    @apply font-heading;
+    color: var(--text-color);
     font-size: 1rem; /* Prevent zoom on iOS */
   }
 
   input::placeholder, textarea::placeholder {
-    @apply text-white/40 font-heading;
+    @apply font-heading;
+    color: var(--text-color);
+    opacity: 0.4;
   }
 
   /* Strong emphasis */
   strong, b {
-    @apply font-semibold text-white;
+    @apply font-semibold;
+    color: var(--text-color);
   }
 
   /* Small text */
   small {
-    @apply text-[0.875rem] text-white/60;
+    @apply text-[0.875rem];
+    color: var(--text-color);
+    opacity: 0.6;
   }
   * {
     @apply border-border outline-ring/50;
@@ -215,65 +211,83 @@
   /* Base: 16px | Scale: 16, 20, 25, 31.25, 39.06, 48.83 */
 
   .heading-display {
-    @apply text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] font-heading font-semibold tracking-tight leading-[1.1] text-white;
+    @apply text-[2.5rem] md:text-[3.5rem] lg:text-[4rem] font-heading font-semibold tracking-tight leading-[1.1];
+    color: var(--text-color);
     /* 40px / 56px / 64px — hero headlines */
   }
 
   .heading-section {
-    @apply text-[1.5rem] md:text-[1.75rem] font-heading font-medium tracking-tight leading-[1.2] text-white;
+    @apply text-[1.5rem] md:text-[1.75rem] font-heading font-medium tracking-tight leading-[1.2];
+    color: var(--text-color);
     /* 24px / 28px — section headers */
   }
 
   .heading-card {
-    @apply text-[1.125rem] font-heading font-medium tracking-tight leading-[1.3] text-white;
+    @apply text-[1.125rem] font-heading font-medium tracking-tight leading-[1.3];
+    color: var(--text-color);
     /* 18px — card titles */
   }
 
   .text-lead {
-    @apply text-[1.125rem] leading-[1.6] text-white/80;
+    @apply text-[1.125rem] leading-[1.6];
+    color: var(--text-color);
+    opacity: 0.8;
     /* 18px — introductory paragraphs */
   }
 
   .text-body {
-    @apply text-base text-white/90 leading-[1.6];
+    @apply text-base leading-[1.6];
+    color: var(--text-color);
+    opacity: 0.9;
     /* 16px — body text, max 65ch */
     max-width: 65ch;
   }
 
   .text-body-sm {
-    @apply text-[0.875rem] text-white/80 leading-[1.5];
+    @apply text-[0.875rem] leading-[1.5];
+    color: var(--text-color);
+    opacity: 0.8;
     /* 14px — secondary content */
   }
 
   .text-caption {
-    @apply text-[0.6875rem] font-semibold text-white/50 uppercase tracking-[0.08em];
+    @apply text-[0.6875rem] font-semibold uppercase tracking-[0.08em];
+    color: var(--text-color);
+    opacity: 0.5;
     /* 11px — labels, uppercase with intentional spacing */
   }
 
   .text-label {
-    @apply text-[0.8125rem] font-semibold text-white/70 tracking-tight leading-[1.4];
+    @apply text-[0.8125rem] font-semibold tracking-tight leading-[1.4];
+    color: var(--text-color);
+    opacity: 0.7;
     /* 13px — form labels, tighter leading */
   }
 
   .text-micro {
-    @apply text-[0.625rem] font-medium text-white/40 uppercase tracking-wider;
+    @apply text-[0.625rem] font-medium uppercase tracking-wider;
+    color: var(--text-color);
+    opacity: 0.4;
     /* 10px — timestamps, metadata */
   }
 
   .text-primary {
-    @apply text-white;
+    color: var(--text-color);
   }
 
   .text-secondary {
-    @apply text-white/60;
+    color: var(--text-color);
+    opacity: 0.6;
   }
 
   .text-tertiary {
-    @apply text-gray-400;
+    color: var(--text-color);
+    opacity: 0.4;
   }
 
   .text-muted {
-    @apply text-white/20;
+    color: var(--text-color);
+    opacity: 0.2;
   }
 
   .glass-panel {

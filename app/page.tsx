@@ -10,7 +10,6 @@ import { encodeCardData, type CarCardData } from '@/lib/utils';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'sonner';
 import { ResetOnboarding } from '@/components/ui/onboarding';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 // shadcn/ui glassmorphism components
 import {
@@ -1013,10 +1012,10 @@ export default function Home() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white selection:bg-apple-red selection:text-white transition-colors duration-300" suppressHydrationWarning>
+    <div className="min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] selection:bg-apple-red selection:text-[var(--text-color)] transition-colors duration-300" suppressHydrationWarning>
       <header className="glass-panel sticky top-0 z-50 mx-2 mt-2 px-4 h-14 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <div className="w-[46px] h-[46px] relative rounded-lg overflow-hidden shadow-lg border border-white/10">
+          <div className="w-[46px] h-[46px] relative rounded-lg overflow-hidden shadow-lg border border-[var(--section-border)]">
             <Image 
               src="/logo.png" 
               alt="CarQR — QR-визитка для автомобиля" 
@@ -1046,10 +1045,9 @@ export default function Home() {
           </span>
         </Link>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
           <Link
             href="/cabinet"
-            className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all relative"
+            className="w-9 h-9 rounded-full bg-[var(--icon-bg)] flex items-center justify-center hover:bg-[var(--icon-bg-hover)] transition-all relative"
             title="Личный кабинет"
           >
             <User className="w-5 h-5" />
@@ -1092,14 +1090,14 @@ export default function Home() {
                     <Package className="w-5 h-5 text-apple-red" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">Установите CarQR</h3>
-                    <p className="text-[10px] text-secondary leading-tight">Быстрый доступ к вашим визиткам прямо с рабочего стола</p>
+                    <h3 className="text-sm font-bold text-primary">Установите CarQR</h3>
+                    <p className="text-[10px] text-white/70 leading-tight">Быстрый доступ к вашим визиткам прямо с рабочего стола</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => setShowInstallBanner(false)}
-                    className="p-2 text-tertiary hover:text-white transition-colors"
+                    className="p-2 text-tertiary hover:text-primary transition-colors"
                   >
                     <Plus className="w-4 h-4 rotate-45" />
                   </button>
@@ -1122,7 +1120,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setShowStats(!showStats)}
-            className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-white/5 transition-colors"
+            className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-[var(--hover-bg)] transition-colors"
           >
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
@@ -1130,7 +1128,7 @@ export default function Home() {
               </div>
               <h2 className="heading-card">Статистика</h2>
             </div>
-            <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+            <div className="w-7 h-7 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center group-hover:bg-[var(--icon-bg-hover)] transition-all">
               {showStats ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </div>
           </button>
@@ -1150,7 +1148,7 @@ export default function Home() {
                   </div>
                   <div className="glass-panel p-3 flex flex-col items-center justify-center text-center">
                     <span className="text-caption mb-1">Активных визиток</span>
-                    <span className="text-2xl font-black text-white">{Object.keys(stats?.cardScans || {}).length}</span>
+                    <span className="text-2xl font-black text-primary">{Object.keys(stats?.cardScans || {}).length}</span>
                   </div>
                 </div>
               </motion.div>
@@ -1174,9 +1172,9 @@ export default function Home() {
                     setFormData(card);
                     triggerVibration(10);
                   }}
-                  className="flex-shrink-0 glass-panel p-2 flex items-center gap-2 min-w-[140px] hover:bg-white/5 transition-all text-left"
+                  className="flex-shrink-0 glass-panel p-2 flex items-center gap-2 min-w-[140px] hover:bg-[var(--hover-bg)] transition-all text-left"
                 >
-                  <div className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+                  <div className="w-7 h-7 rounded-lg bg-[var(--icon-bg)] flex items-center justify-center border border-[var(--section-border)]">
                     <Car className="w-3.5 h-3.5 text-secondary" />
                   </div>
                   <div className="overflow-hidden">
@@ -1211,7 +1209,7 @@ export default function Home() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-secondary text-sm"
+                className="text-white/70 text-sm"
               >
                 Безопасное шифрование данных
               </motion.p>
@@ -1219,14 +1217,14 @@ export default function Home() {
           </motion.div>
 
           {/* Instruction Section */}
-          <div className="mb-4 border-b border-white/10 pb-3">
+          <div className="mb-4 border-b border-[var(--section-border)] pb-3">
             <button
               type="button"
               onClick={() => toggleSection('instruction')}
-              className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-white/5 transition-colors"
+              className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-[var(--hover-bg)] transition-colors"
             >
               <h2 className="heading-card">Как это работает?</h2>
-              <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+              <div className="w-7 h-7 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center group-hover:bg-[var(--icon-bg-hover)] transition-all">
                 {expandedSections.instruction ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </div>
             </button>
@@ -1264,11 +1262,11 @@ export default function Home() {
 
           <form onSubmit={generateQR} className="space-y-3">
             {/* Car Info */}
-            <div className="space-y-3 border-b border-white/10 pb-3 pt-1">
+            <div className="space-y-3 border-b border-[var(--section-border)] pb-3 pt-1">
               <button 
                 type="button"
                 onClick={() => toggleSection('car')}
-                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-[var(--hover-bg)] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
@@ -1276,7 +1274,7 @@ export default function Home() {
                   </div>
                   <h2 className="heading-card">Автомобиль</h2>
                 </div>
-                <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+                <div className="w-7 h-7 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center group-hover:bg-[var(--icon-bg-hover)] transition-all">
                   {expandedSections.car ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </div>
               </button>
@@ -1331,11 +1329,11 @@ export default function Home() {
             </div>
 
             {/* Owner Info */}
-            <div className="space-y-3 border-b border-white/10 pb-3 pt-1">
+            <div className="space-y-3 border-b border-[var(--section-border)] pb-3 pt-1">
               <button 
                 type="button"
                 onClick={() => toggleSection('owner')}
-                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-[var(--hover-bg)] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
@@ -1343,7 +1341,7 @@ export default function Home() {
                   </div>
                   <h2 className="heading-card">Владелец</h2>
                 </div>
-                <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+                <div className="w-7 h-7 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center group-hover:bg-[var(--icon-bg-hover)] transition-all">
                   {expandedSections.owner ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </div>
               </button>
@@ -1399,11 +1397,11 @@ export default function Home() {
             </div>
 
             {/* Socials */}
-            <div className="space-y-3 border-b border-white/10 pb-3 pt-1">
+            <div className="space-y-3 border-b border-[var(--section-border)] pb-3 pt-1">
               <button 
                 type="button"
                 onClick={() => toggleSection('socials')}
-                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-[var(--hover-bg)] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
@@ -1411,7 +1409,7 @@ export default function Home() {
                   </div>
                   <h2 className="heading-card">Мессенджеры</h2>
                 </div>
-                <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+                <div className="w-7 h-7 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center group-hover:bg-[var(--icon-bg-hover)] transition-all">
                   {expandedSections.socials ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </div>
               </button>
@@ -1432,7 +1430,7 @@ export default function Home() {
                           value={formData.telegram || ''}
                           onChange={handleInputChange}
                           placeholder="Telegram (username)"
-                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30"
+                          className="w-full bg-[var(--field-bg)] border-2 border-[var(--field-border)] hover:border-[var(--field-border-hover)] rounded-xl px-3 py-2 text-base font-heading focus:border-apple-red transition-all outline-none placeholder:text-[var(--field-placeholder)]"
                         />
                       </div>
 
@@ -1444,7 +1442,7 @@ export default function Home() {
                           value={formData.whatsapp || ''}
                           onChange={handleInputChange}
                           placeholder="WhatsApp (+7...)"
-                          className="w-full bg-white/5 border-2 border-white/5 hover:border-white/10 rounded-xl px-3 py-2 text-base font-heading text-white focus:border-apple-red transition-all outline-none placeholder:text-white/30"
+                          className="w-full bg-[var(--field-bg)] border-2 border-[var(--field-border)] hover:border-[var(--field-border-hover)] rounded-xl px-3 py-2 text-base font-heading focus:border-apple-red transition-all outline-none placeholder:text-[var(--field-placeholder)]"
                         />
                       </div>
                     </div>
@@ -1454,11 +1452,11 @@ export default function Home() {
             </div>
 
             {/* Quick Buttons */}
-            <div className="space-y-3 border-b border-white/10 pb-3 pt-1">
+            <div className="space-y-3 border-b border-[var(--section-border)] pb-3 pt-1">
               <button 
                 type="button"
                 onClick={() => toggleSection('buttons')}
-                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-[var(--hover-bg)] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
@@ -1466,7 +1464,7 @@ export default function Home() {
                   </div>
                   <h2 className="heading-card">Быстрые кнопки</h2>
                 </div>
-                <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+                <div className="w-7 h-7 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center group-hover:bg-[var(--icon-bg-hover)] transition-all">
                   {expandedSections.buttons ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </div>
               </button>
@@ -1490,7 +1488,7 @@ export default function Home() {
                             className={`flex flex-col items-center justify-center min-h-[60px] p-2 rounded-xl border-2 transition-all active:scale-95 ${
                               isActive
                                 ? 'bg-apple-red border-transparent text-white red-glow'
-                                : 'bg-white/5 border-white/5 text-white hover:border-white/10'
+                                : 'bg-[var(--field-bg)] border-[var(--field-border)] hover:border-[var(--field-border-hover)]'
                             }`}
                           >
                             <btn.icon className={`w-4 h-4 mb-1 text-white`} />
@@ -1507,11 +1505,11 @@ export default function Home() {
             </div>
 
             {/* Design Customization */}
-            <div className="space-y-3 border-b border-white/10 pb-3 pt-1">
+            <div className="space-y-3 border-b border-[var(--section-border)] pb-3 pt-1">
               <button 
                 type="button"
                 onClick={() => toggleSection('design')}
-                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-white/5 transition-colors"
+                className="w-full flex items-center justify-between text-left group focus:outline-none rounded-xl p-1 -ml-1 hover:bg-[var(--hover-bg)] transition-colors"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-7 h-7 rounded-lg bg-apple-red/20 flex items-center justify-center">
@@ -1519,7 +1517,7 @@ export default function Home() {
                   </div>
                   <h2 className="heading-card">Дизайн</h2>
                 </div>
-                <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+                <div className="w-7 h-7 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center group-hover:bg-[var(--icon-bg-hover)] transition-all">
                   {expandedSections.design ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </div>
               </button>
@@ -1541,14 +1539,14 @@ export default function Home() {
                             name="themeColor"
                             value={formData.themeColor}
                             onChange={handleInputChange}
-                            className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-2 border-white/10"
+                            className="w-8 h-8 rounded-lg cursor-pointer bg-transparent border-2 border-[var(--section-border)]"
                           />
                           <input
                             type="text"
                             name="themeColor"
                             value={formData.themeColor}
                             onChange={handleInputChange}
-                            className="flex-1 bg-white/5 border-2 border-white/5 rounded-xl px-2 py-1.5 text-xs font-mono text-secondary"
+                            className="flex-1 bg-[var(--field-bg)] border-2 border-[var(--field-border)] rounded-xl px-2 py-1.5 text-xs font-mono text-secondary"
                           />
                         </div>
                       </div>
@@ -1562,7 +1560,7 @@ export default function Home() {
                             value={formData.qrText || ''}
                             onChange={handleInputChange}
                             placeholder="Сканируй меня!"
-                            className="w-full bg-white/5 border-2 border-white/5 rounded-xl pl-8 pr-3 py-2 text-base font-heading text-white focus:border-apple-red outline-none transition-all placeholder:text-white/30"
+                            className="w-full bg-[var(--field-bg)] border-2 border-[var(--field-border)] rounded-xl pl-8 pr-3 py-2 text-base font-heading focus:border-apple-red outline-none transition-all placeholder:text-[var(--field-placeholder)]"
                           />
                         </div>
                       </div>
@@ -1578,7 +1576,7 @@ export default function Home() {
                               className={`flex-shrink-0 flex flex-col items-center justify-center min-w-[85px] p-2.5 rounded-xl border-2 transition-all active:scale-95 ${
                                 formData.selectedFrame === frame.id
                                   ? 'bg-apple-red border-transparent text-white red-glow'
-                                  : 'bg-white/5 border-white/5 text-white hover:border-white/10'
+                                  : 'bg-[var(--field-bg)] border-[var(--field-border)] hover:border-[var(--field-border-hover)]'
                               }`}
                             >
                               <frame.icon className="w-4 h-4 mb-1.5" />
@@ -1637,7 +1635,7 @@ export default function Home() {
 
         <footer className="mt-12 mb-8 text-center space-y-6 relative z-10 px-4">
           <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--icon-bg)] rounded-full border border-[var(--section-border)]">
               <ShieldCheck className="w-4 h-4 text-apple-red" />
               <span className="text-[10px] text-tertiary leading-tight max-w-[220px] text-center uppercase tracking-wider font-medium">
                 Данные не хранятся на сервере, а кодируются прямо в QR-код
@@ -1665,6 +1663,12 @@ export default function Home() {
                 Обработка данных
               </Link>
               <ResetOnboarding />
+              <button 
+                onClick={() => setShowInstallBanner(true)} 
+                className="text-tertiary hover:text-secondary transition-colors"
+              >
+                Показать баннер
+              </button>
             </div>
           </div>
         </footer>
@@ -1696,23 +1700,23 @@ export default function Home() {
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/10">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">1</div>
+                <div className="flex items-center gap-4 p-3 bg-[var(--icon-bg)] rounded-xl border border-[var(--section-border)]">
+                  <div className="w-8 h-8 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center text-sm font-bold">1</div>
                   <p className="text-sm">Нажмите кнопку <span className="font-bold text-apple-red">«Поделиться»</span> в нижней панели браузера</p>
                 </div>
-                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/10">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">2</div>
+                <div className="flex items-center gap-4 p-3 bg-[var(--icon-bg)] rounded-xl border border-[var(--section-border)]">
+                  <div className="w-8 h-8 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center text-sm font-bold">2</div>
                   <p className="text-sm">Прокрутите меню вниз и выберите <span className="font-bold text-apple-red">«На экран „Домой“»</span></p>
                 </div>
-                <div className="flex items-center gap-4 p-3 bg-white/5 rounded-xl border border-white/10">
-                  <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">3</div>
+                <div className="flex items-center gap-4 p-3 bg-[var(--icon-bg)] rounded-xl border border-[var(--section-border)]">
+                  <div className="w-8 h-8 rounded-full bg-[var(--icon-bg-hover)] flex items-center justify-center text-sm font-bold">3</div>
                   <p className="text-sm">Нажмите <span className="font-bold text-apple-red">«Добавить»</span> в правом верхнем углу</p>
                 </div>
               </div>
 
               <button
                 onClick={() => setShowIOSInstructions(false)}
-                className="w-full py-3 rounded-xl bg-white/10 font-bold hover:bg-white/20 transition-all"
+                className="w-full py-3 rounded-xl bg-[var(--icon-bg-hover)] font-bold hover:bg-white/20 transition-all"
               >
                 Понятно
               </button>
@@ -1731,11 +1735,11 @@ export default function Home() {
             className="fixed inset-0 z-50 flex flex-col bg-black/95 backdrop-blur-2xl"
           >
             {/* Header */}
-            <header className="flex items-center justify-between px-8 py-6 border-b border-white/10">
+            <header className="flex items-center justify-between px-8 py-6 border-b border-[var(--section-border)]">
               <h2 className="text-2xl font-bold tracking-tight">Ваш QR-код</h2>
               <button 
                 onClick={() => setShowQR(false)}
-                className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all"
+                className="w-12 h-12 rounded-full bg-[var(--icon-bg)] flex items-center justify-center hover:bg-[var(--icon-bg-hover)] transition-all"
               >
                 <Plus className="w-6 h-6 rotate-45" />
               </button>
@@ -1810,7 +1814,7 @@ export default function Home() {
                         className={`flex-shrink-0 w-16 h-16 rounded-xl border-2 flex flex-col items-center justify-center gap-1 transition-all ${
                           formData.selectedFrame === frame.id 
                             ? 'bg-apple-red border-transparent text-white shadow-lg' 
-                            : 'bg-white/5 border-white/10 text-white/60 hover:border-white/20'
+                            : 'bg-[var(--icon-bg)] border-[var(--section-border)] text-tertiary hover:border-[var(--field-border-hover)]'
                         }`}
                       >
                         <frame.icon className="w-5 h-5" />
@@ -1831,7 +1835,7 @@ export default function Home() {
                   
                   <button
                     onClick={() => setShowMockup(true)}
-                    className="py-3 px-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-1.5 border bg-white/5 border-white/10 text-white hover:bg-white/10 transition-all"
+                    className="py-3 px-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-1.5 border bg-[var(--icon-bg)] border-[var(--section-border)] text-white hover:bg-[var(--icon-bg-hover)] transition-all"
                   >
                     <ImageIcon className="w-4 h-4" />
                     <span className="text-caption">Макет</span>
@@ -1839,7 +1843,7 @@ export default function Home() {
                   
                   <button
                     onClick={saveCardToProfile}
-                    className="py-3 px-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-1.5 border bg-white/5 border-white/10 text-white hover:bg-white/10 transition-all"
+                    className="py-3 px-2 rounded-2xl font-bold flex flex-col items-center justify-center gap-1.5 border bg-[var(--icon-bg)] border-[var(--section-border)] text-white hover:bg-[var(--icon-bg-hover)] transition-all"
                   >
                     <Plus className="w-4 h-4" />
                     <span className="text-caption">Профиль</span>
@@ -1856,7 +1860,7 @@ export default function Home() {
 
                 <button
                   onClick={() => copyToClipboard(generatedUrl || '')}
-                  className="w-full py-4 px-8 rounded-2xl bg-white/5 text-white font-bold flex items-center justify-center gap-3 border border-white/10 hover:bg-white/10 transition-all"
+                  className="w-full py-4 px-8 rounded-2xl bg-[var(--icon-bg)] text-white font-bold flex items-center justify-center gap-3 border border-[var(--section-border)] hover:bg-[var(--icon-bg-hover)] transition-all"
                 >
                   <Check className="w-5 h-5 text-white/30" />
                   Копировать ссылку
@@ -1871,7 +1875,7 @@ export default function Home() {
                         const url = encodeURIComponent('https://avtovisitka.ru/');
                         window.open(`https://t.me/share/url?url=${url}&text=${text}`, '_blank');
                       }}
-                      className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all"
+                      className="w-12 h-12 rounded-2xl bg-[var(--icon-bg)] flex items-center justify-center border border-[var(--section-border)] hover:bg-[var(--icon-bg-hover)] transition-all"
                       title="Telegram"
                     >
                       <Send className="w-5 h-5 text-apple-red" />
@@ -1882,7 +1886,7 @@ export default function Home() {
                         const url = encodeURIComponent('https://avtovisitka.ru/');
                         window.open(`https://wa.me/?text=${text}${url}`, '_blank');
                       }}
-                      className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all"
+                      className="w-12 h-12 rounded-2xl bg-[var(--icon-bg)] flex items-center justify-center border border-[var(--section-border)] hover:bg-[var(--icon-bg-hover)] transition-all"
                       title="WhatsApp"
                     >
                       <MessageSquare className="w-5 h-5 text-apple-red" />
@@ -1892,21 +1896,21 @@ export default function Home() {
                         const url = encodeURIComponent('https://avtovisitka.ru/');
                         window.open(`https://vk.com/share.php?url=${url}`, '_blank');
                       }}
-                      className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all"
+                      className="w-12 h-12 rounded-2xl bg-[var(--icon-bg)] flex items-center justify-center border border-[var(--section-border)] hover:bg-[var(--icon-bg-hover)] transition-all"
                       title="VK"
                     >
                       <span className="font-bold text-apple-red text-sm">VK</span>
                     </button>
                     <button
                       onClick={() => shareQRImage()}
-                      className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all"
+                      className="w-12 h-12 rounded-2xl bg-[var(--icon-bg)] flex items-center justify-center border border-[var(--section-border)] hover:bg-[var(--icon-bg-hover)] transition-all"
                       title="Поделиться картинкой"
                     >
                       <ImageIcon className="w-5 h-5 text-apple-red" />
                     </button>
                     <button
                       onClick={() => shareApp()}
-                      className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 hover:bg-white/10 transition-all"
+                      className="w-12 h-12 rounded-2xl bg-[var(--icon-bg)] flex items-center justify-center border border-[var(--section-border)] hover:bg-[var(--icon-bg-hover)] transition-all"
                       title="Другое"
                     >
                       <Plus className="w-5 h-5 text-apple-red" />
@@ -1934,17 +1938,17 @@ export default function Home() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[60] flex flex-col bg-black/95 backdrop-blur-2xl"
           >
-            <header className="flex items-center justify-between px-8 py-6 border-b border-white/10">
+            <header className="flex items-center justify-between px-8 py-6 border-b border-[var(--section-border)]">
               <h2 className="text-2xl font-bold tracking-tight">Макеты наклеек</h2>
               <button 
                 onClick={() => setShowMockup(false)}
-                className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all"
+                className="w-12 h-12 rounded-full bg-[var(--icon-bg)] flex items-center justify-center hover:bg-[var(--icon-bg-hover)] transition-all"
               >
                 <Plus className="w-6 h-6 rotate-45" />
               </button>
             </header>
             <div className="flex-1 flex items-center justify-center p-4">
-              <div className="relative w-full max-w-lg aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10 group">
+              <div className="relative w-full max-w-lg aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-[var(--section-border)] group">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={currentMockupIndex}
@@ -1976,7 +1980,7 @@ export default function Home() {
                       e.stopPropagation();
                       setCurrentMockupIndex((prev) => (prev - 1 + MOCKUP_IMAGES.length) % MOCKUP_IMAGES.length);
                     }}
-                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white pointer-events-auto hover:bg-black/60 transition-all"
+                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-[var(--section-border)] flex items-center justify-center text-white pointer-events-auto hover:bg-black/60 transition-all"
                   >
                     <ChevronLeft className="w-6 h-6" />
                   </button>
@@ -1985,7 +1989,7 @@ export default function Home() {
                       e.stopPropagation();
                       setCurrentMockupIndex((prev) => (prev + 1) % MOCKUP_IMAGES.length);
                     }}
-                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white pointer-events-auto hover:bg-black/60 transition-all"
+                    className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-[var(--section-border)] flex items-center justify-center text-white pointer-events-auto hover:bg-black/60 transition-all"
                   >
                     <ChevronRight className="w-6 h-6" />
                   </button>
